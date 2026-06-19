@@ -1,0 +1,4 @@
+node_modules/
+*.py
+tmp_video.mp4
+.DS_Store
