@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Agentation Toolbar",
+  "version": "1.0",
+  "description": "A premium AI assistant floating toolbar for web pages.",
+  "permissions": ["activeTab", "storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Agentation Settings"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["content.css"],
+      "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*", "content.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

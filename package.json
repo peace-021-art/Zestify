@@ -1,0 +1,19 @@
+{
+  "name": "part-4-amazon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i input.css -o style.css --watch",
+    "build": "tailwindcss -i input.css -o style.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "agentation": "^3.0.2",
+    "agentation-wc": "^1.0.2",
+    "tailwindcss": "^4.3.0"
+  }
+}

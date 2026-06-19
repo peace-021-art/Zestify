@@ -1,0 +1,2434 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 18px;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zestify - Grocery Shopping</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Hide scrollbar for category scroll on mobile */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="antialiased bg-[#f8f9fa]">
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm transition-all duration-300">
+        <!-- Top Tier -->
+        <div class="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 flex items-center justify-between py-4 gap-6">
+            
+            <!-- Left: Mobile Menu & Logo -->
+            <div class="flex items-center gap-4 shrink-0">
+                <button class="lg:hidden hover:bg-gray-100 p-2 rounded-lg transition text-gray-700">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <a href="#" class="flex items-center gap-2 text-2xl sm:text-3xl font-black tracking-tight text-black" onclick="showPage('home')">
+                    <div class="bg-[#ffb05c] text-[#d94a11] w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-leaf text-lg sm:text-xl"></i>
+                    </div>
+                    Zestify
+                </a>
+            </div>
+
+            <!-- Center: Search Bar (Modern, prominent) -->
+            <div class="hidden lg:flex flex-1 max-w-2xl px-4 xl:px-8">
+                <div class="w-full relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                    </div>
+                    <input type="text" class="block w-full pl-11 pr-32 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11] transition-all" placeholder="Search for groceries, fruits, vegetables...">
+                    <button class="absolute inset-y-1.5 right-1.5 px-6 bg-gray-900 hover:bg-black text-white text-sm font-bold rounded-full transition-colors shadow-sm">
+                        Search
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Actions -->
+            <div class="flex items-center justify-end gap-2 sm:gap-4 shrink-0">
+                <!-- Mobile Search Icon -->
+                <button class="lg:hidden text-gray-600 hover:text-[#d94a11] transition p-2">
+                    <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                </button>
+                
+
+
+                <!-- User Profile (Logged Out State) -->
+                <button id="auth-login-btn" onclick="openAuthModal()" class="hidden sm:flex items-center gap-2 text-gray-600 hover:text-[#d94a11] hover:bg-gray-50 transition p-1 pr-3 rounded-full border border-transparent hover:border-gray-200">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 shadow-sm border border-gray-200">
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+                    <span class="text-sm font-bold hidden xl:block mr-1">Sign In</span>
+                </button>
+
+                <!-- User Profile Dropdown (Logged In State) -->
+                <div id="auth-user-dropdown" class="relative group hidden cursor-pointer z-[60]">
+                    <button class="flex items-center gap-2 text-gray-700 hover:bg-gray-50 transition p-1 pr-3 rounded-full border border-transparent hover:border-gray-200">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User Avatar" class="w-8 h-8 rounded-full border border-gray-200 object-cover shadow-sm">
+                        <div class="hidden xl:flex flex-col items-start leading-none mr-1">
+                            <span class="text-sm font-bold text-gray-900">Ayman E.</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:rotate-180 transition-transform hidden xl:block"></i>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top scale-95 group-hover:scale-100 overflow-hidden font-medium">
+                        
+                        <!-- Header -->
+                        <div class="p-4 border-b border-gray-100 flex items-center gap-3 bg-gray-50/50">
+                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User Avatar" class="w-10 h-10 rounded-full border border-gray-200 object-cover shadow-sm">
+                            <div class="flex-1">
+                                <h3 class="font-bold text-gray-900 text-sm">Ayman Echakar</h3>
+                                <p class="text-xs text-gray-500">@aymanch-03</p>
+                            </div>
+                            <span class="bg-green-100 text-green-700 border border-green-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Online</span>
+                        </div>
+                        
+                        <!-- Status Menu -->
+                        <div class="p-2 border-b border-gray-100">
+                            <div class="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg cursor-pointer transition">
+                                <i class="fa-regular fa-face-smile text-gray-400 w-4 text-center"></i>
+                                Update status
+                                <i class="fa-solid fa-chevron-right text-[10px] ml-auto text-gray-400"></i>
+                            </div>
+                        </div>
+
+                        <!-- Profile Items -->
+                        <div class="p-2 border-b border-gray-100">
+                            <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition">
+                                <i class="fa-regular fa-user text-gray-400 w-4 text-center"></i> Your profile
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition">
+                                <i class="fa-solid fa-palette text-gray-400 w-4 text-center"></i> Appearance
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition">
+                                <i class="fa-solid fa-gear text-gray-400 w-4 text-center"></i> Settings
+                            </a>
+                            <a href="#" class="flex items-center justify-between px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-regular fa-bell text-gray-400 w-4 text-center"></i> Notifications
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <!-- Premium Items -->
+                        <div class="p-2 border-b border-gray-100">
+                            <a href="#" class="flex items-center justify-between px-3 py-2 text-sm text-amber-600 hover:bg-amber-50 rounded-lg transition font-bold">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-crown text-amber-500 w-4 text-center"></i> Upgrade to Pro
+                                </div>
+                                <span class="bg-amber-600 text-white text-[10px] px-2 py-0.5 rounded shadow-sm">20% OFF</span>
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition">
+                                <i class="fa-solid fa-gift text-gray-400 w-4 text-center"></i> Referrals
+                            </a>
+                        </div>
+
+                        <!-- Support Items -->
+                        <div class="p-2 border-b border-gray-100">
+                            <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition">
+                                <i class="fa-solid fa-download text-gray-400 w-4 text-center"></i> Download app
+                            </a>
+                            <a href="#" class="flex items-center justify-between px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-regular fa-envelope-open text-gray-400 w-4 text-center"></i> What's new?
+                                </div>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400"></i>
+                            </a>
+                        </div>
+
+                        <!-- Account Items -->
+                        <div class="p-2 bg-gray-50/50">
+                            <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-white hover:text-gray-900 rounded-lg transition shadow-sm border border-transparent hover:border-gray-200">
+                                <i class="fa-solid fa-users text-gray-400 w-4 text-center"></i> Switch account
+                            </a>
+                            <a href="#" onclick="logoutUser(event)" class="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition font-bold">
+                                <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center"></i> Log out
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Cart -->
+                <a href="#" class="relative flex items-center gap-3 text-gray-700 hover:text-[#d94a11] transition p-2 bg-gray-50 hover:bg-[#fff7ed] rounded-full pl-3 pr-4 sm:pr-5 border border-gray-200" onclick="showPage('checkout')">
+                    <div class="relative">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 bg-white rounded-full flex items-center justify-center shadow-sm">
+                            <i class="fa-solid fa-cart-shopping text-sm sm:text-base text-[#d94a11]"></i>
+                        </div>
+                        <span id="nav-cart-count" class="absolute -top-1 -right-1 bg-gray-400 text-white text-[10px] font-bold min-w-[1.125rem] h-4.5 px-1 flex items-center justify-center rounded-full shadow-sm ring-2 ring-white">0</span>
+                    </div>
+                    <div class="hidden xl:flex flex-col items-start leading-none">
+                        <span class="text-[10px] text-gray-500 font-medium mb-0.5">Total Cart</span>
+                        <span id="nav-cart-total" class="text-sm font-black text-gray-900">₹0.00</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Bottom Tier: Categories/Links -->
+        <div class="hidden lg:flex w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 items-center justify-between py-3 border-t border-gray-100 bg-white">
+            <div class="flex items-center gap-8">
+                <!-- Categories Button with Dropdown -->
+                <div class="relative group cursor-pointer z-50">
+                    <button class="flex items-center gap-3 bg-gray-900 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md group-hover:bg-black transition shrink-0 w-full justify-between">
+                        <span class="flex items-center gap-3">
+                            <i class="fa-solid fa-bars-staggered"></i>
+                            Browse Categories
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-white/70 group-hover:rotate-180 transition-transform ml-1"></i>
+                    </button>
+                    <!-- Mega Menu Dropdown -->
+                    <div class="absolute left-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top scale-95 group-hover:scale-100 py-3 font-medium overflow-hidden">
+                        <a href="#" class="flex items-center gap-3 px-5 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-[#d94a11] transition-colors"><i class="fa-solid fa-apple-whole w-5 text-center text-red-500"></i> Fruits</a>
+                        <a href="#" class="flex items-center gap-3 px-5 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-[#d94a11] transition-colors"><i class="fa-solid fa-carrot w-5 text-center text-orange-500"></i> Vegetables</a>
+                        <a href="#" class="flex items-center gap-3 px-5 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-[#d94a11] transition-colors"><i class="fa-solid fa-bread-slice w-5 text-center text-amber-600"></i> Breads</a>
+                        <a href="#" class="flex items-center gap-3 px-5 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-[#d94a11] transition-colors"><i class="fa-solid fa-cow w-5 text-center text-gray-500"></i> Dairy</a>
+                        <a href="#" class="flex items-center gap-3 px-5 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-[#d94a11] transition-colors"><i class="fa-solid fa-seedling w-5 text-center text-green-600"></i> Herbs & Seasonings</a>
+                        <div class="h-px bg-gray-100 my-2 mx-4"></div>
+                        <a href="#" class="flex items-center gap-3 px-5 py-2.5 text-[#d94a11] hover:bg-orange-50 font-bold transition-colors">View All Categories <i class="fa-solid fa-arrow-right ml-auto text-xs"></i></a>
+                    </div>
+                </div>
+
+                <!-- Main Links -->
+                <ul class="flex items-center gap-6 xl:gap-8 text-[14px] font-bold text-gray-600 h-full">
+                    <li class="h-full flex items-center"><a href="#" class="group relative py-1 hover:text-[#d94a11] transition flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-orange-500"></i> Hot Offer
+                        <span class="absolute bottom-0 left-0 w-full h-0.5 bg-[#d94a11] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                    </a></li>
+                    <li class="relative group cursor-pointer h-full flex items-center">
+                        <a href="#" class="hover:text-[#d94a11] transition flex items-center gap-1.5 py-1 text-gray-900 group-hover:text-[#d94a11]">
+                            Shop <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:rotate-180 transition-transform"></i>
+                            <span class="absolute bottom-0 left-0 w-[calc(100%-1rem)] h-0.5 bg-[#d94a11] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                        </a>
+                        <!-- Dropdown -->
+                        <div class="absolute left-1/2 -translate-x-1/2 top-full mt-0 w-48 bg-white rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 group-hover:delay-0 delay-150 z-50 transform origin-top scale-95 group-hover:scale-100 py-2 border border-gray-100 font-medium">
+                            <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#fff7ed] hover:text-[#d94a11] transition">All Products</a>
+                            <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#fff7ed] hover:text-[#d94a11] transition">Produce</a>
+                            <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#fff7ed] hover:text-[#d94a11] transition">Dairy & Bakery</a>
+                        </div>
+                    </li>
+                    <li class="group cursor-pointer relative h-full flex items-center">
+                        <a href="javascript:void(0)" class="group/link relative py-1 hover:text-[#d94a11] transition-colors inline-block">
+                            New Arrivals <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:rotate-180 transition-transform ml-1"></i>
+                            <span class="absolute bottom-0 left-0 w-[calc(100%-1.25rem)] h-0.5 bg-[#d94a11] transform scale-x-0 group-hover/link:scale-x-100 transition-transform duration-300 origin-left"></span>
+                        </a>
+                        <div class="absolute left-1/2 -translate-x-1/2 top-full mt-0 w-56 bg-white rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 group-hover:delay-0 delay-150 z-50 transform origin-top scale-95 group-hover:scale-100 p-3 border border-gray-100">
+                            <a href="javascript:void(0)" class="flex items-center gap-3 p-2 rounded-lg hover:bg-orange-50 hover:text-[#d94a11] transition group/item">
+                                <div class="w-8 h-8 rounded bg-orange-100 flex items-center justify-center text-[#d94a11]"><i class="fa-solid fa-leaf text-xs"></i></div>
+                                <div><div class="text-sm font-bold text-gray-900 group-hover/item:text-[#d94a11]">Spring Selection</div><div class="text-[10px] text-gray-500 font-normal">Recently added</div></div>
+                            </a>
+                            <a href="javascript:void(0)" class="flex items-center gap-3 p-2 rounded-lg hover:bg-orange-50 hover:text-[#d94a11] transition group/item mt-1">
+                                <div class="w-8 h-8 rounded bg-blue-100 flex items-center justify-center text-blue-600"><i class="fa-solid fa-fish text-xs"></i></div>
+                                <div><div class="text-sm font-bold text-gray-900 group-hover/item:text-[#d94a11]">Seafood</div><div class="text-[10px] text-gray-500 font-normal">Arrived this morning</div></div>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="group cursor-pointer static h-full flex items-center">
+                        <a href="javascript:void(0)" class="group/link relative py-1 hover:text-[#d94a11] transition-colors inline-block">
+                            Collections <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:rotate-180 transition-transform ml-1"></i>
+                            <span class="absolute bottom-0 left-0 w-[calc(100%-1.25rem)] h-0.5 bg-[#d94a11] transform scale-x-0 group-hover/link:scale-x-100 transition-transform duration-300 origin-left"></span>
+                        </a>
+                        <!-- Mega Menu Dropdown -->
+                        <div class="absolute left-0 top-full w-full bg-white shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 group-hover:delay-0 delay-150 z-50 transform origin-top -translate-y-2 group-hover:translate-y-0 border border-gray-100 rounded-b-3xl overflow-hidden">
+                            <div class="p-8 grid grid-cols-4 gap-8">
+                                <!-- Column 1 -->
+                                <div>
+                                    <h3 class="mb-4 text-xs font-black text-gray-900 tracking-wider uppercase text-[#d94a11]">Produce</h3>
+                                    <ul class="space-y-3">
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-apple-whole w-4 text-gray-400 text-xs"></i> Fruits</a></li>
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-carrot w-4 text-gray-400 text-xs"></i> Vegetables</a></li>
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-leaf w-4 text-gray-400 text-xs"></i> Herbs</a></li>
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-pepper-hot w-4 text-gray-400 text-xs"></i> Specialty Vegetables</a></li>
+                                    </ul>
+                                </div>
+                                <!-- Column 2 -->
+                                <div>
+                                    <h3 class="mb-4 text-xs font-black text-gray-900 tracking-wider uppercase text-[#d94a11]">Dairy & Bakery</h3>
+                                    <ul class="space-y-3">
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-cow w-4 text-gray-400 text-xs"></i> Milk</a></li>
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-cheese w-4 text-gray-400 text-xs"></i> Cheese</a></li>
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-bread-slice w-4 text-gray-400 text-xs"></i> Breads</a></li>
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-egg w-4 text-gray-400 text-xs"></i> Eggs</a></li>
+                                    </ul>
+                                </div>
+                                <!-- Column 3 -->
+                                <div>
+                                    <h3 class="mb-4 text-xs font-black text-gray-900 tracking-wider uppercase text-[#d94a11]">Pantry Staples</h3>
+                                    <ul class="space-y-3">
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-bowl-rice w-4 text-gray-400 text-xs"></i> Rice & Grains</a></li>
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-bottle-droplet w-4 text-gray-400 text-xs"></i> Oils</a></li>
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-jar w-4 text-gray-400 text-xs"></i> Spices & Masalas</a></li>
+                                        <li><a href="javascript:void(0)" class="text-sm font-medium text-gray-600 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all flex items-center gap-2"><i class="fa-solid fa-mug-hot w-4 text-gray-400 text-xs"></i> Tea & Coffee</a></li>
+                                    </ul>
+                                </div>
+                                <!-- Column 4 (Featured Image) -->
+                                <div class="relative rounded-2xl overflow-hidden h-full min-h-[220px] group/mega shadow-md">
+                                    <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Produce" class="absolute inset-0 w-full h-full object-cover transform group-hover/mega:scale-105 transition-transform duration-700">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                                    <div class="absolute bottom-0 left-0 p-5 w-full">
+                                        <span class="bg-[#d94a11] text-white text-[10px] font-bold px-2 py-1 rounded mb-2 inline-block shadow-sm">NEW</span>
+                                        <h4 class="text-white font-bold text-lg leading-tight drop-shadow-md">Produce Collection</h4>
+                                        <a href="javascript:void(0)" class="text-white text-sm font-bold mt-2 inline-flex items-center gap-1 hover:text-[#ffb05c] transition-colors drop-shadow">Shop Now <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="group cursor-pointer relative h-full flex items-center">
+                        <a href="javascript:void(0)" class="group/link relative py-1 hover:text-[#d94a11] transition-colors inline-block">
+                            Bundle Deals <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:rotate-180 transition-transform ml-1"></i>
+                            <span class="absolute bottom-0 left-0 w-[calc(100%-1.25rem)] h-0.5 bg-[#d94a11] transform scale-x-0 group-hover/link:scale-x-100 transition-transform duration-300 origin-left"></span>
+                        </a>
+                        <div class="absolute left-1/2 -translate-x-1/2 top-full mt-0 w-48 bg-white rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 group-hover:delay-0 delay-150 z-50 transform origin-top scale-95 group-hover:scale-100 py-2 border border-gray-100 font-medium">
+                            <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#fff7ed] hover:text-[#d94a11] transition">Weekly Saver Kits</a>
+                            <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#fff7ed] hover:text-[#d94a11] transition">Family Packs</a>
+                            <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#fff7ed] hover:text-[#d94a11] transition">Breakfast Bundles</a>
+                        </div>
+                    </li>
+                    <li class="h-full flex items-center"><a href="#" class="group relative py-1 hover:text-[#d94a11] transition-colors flex items-center gap-2">
+                        Sale <span class="bg-red-500 text-white border border-transparent text-[10px] px-2.5 py-0.5 rounded-full tracking-wider font-bold shadow-sm animate-pulse">20% OFF</span>
+                        <span class="absolute bottom-0 left-0 w-[calc(100%-4.5rem)] h-0.5 bg-[#d94a11] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                    </a></li>
+                </ul>
+            </div>
+
+            <!-- Right Side Contact -->
+            <div class="flex items-center gap-2 text-sm font-bold text-gray-600">
+                <i class="fa-solid fa-headset text-[#d94a11] text-lg"></i>
+                <span>Need Help? <a href="#" class="text-[#d94a11] hover:underline">1-800-ZESTIFY</a></span>
+            </div>
+        </div>
+        
+        <!-- Hidden search elements to prevent JS errors -->
+        <div id="search-container" class="hidden">
+            <input type="text" id="search-input">
+            <div id="search-dropdown"></div>
+        </div>
+    </nav>
+
+    <!-- PAGE 0: Home Page -->
+    <main id="page-home" class="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 mt-2 sm:mt-6 block animate-[fadeIn_0.5s_ease-out]">
+        <!-- Modern Hero Carousel -->
+        <div class="relative overflow-hidden mb-8 sm:mb-12 shadow-sm rounded-3xl sm:rounded-[2rem] border border-[#ffb05c] group" id="hero-carousel">
+            <!-- Slide Container -->
+            <div class="flex transition-transform duration-700 ease-in-out w-full h-full" id="hero-slides">
+                
+                <!-- Slide 1 -->
+                <div class="min-w-full relative bg-gradient-to-r from-[#fff7ed] to-[#ffb05c] p-6 sm:p-10 lg:p-14 overflow-hidden shrink-0">
+                    <div class="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-white/40 rounded-full blur-2xl sm:blur-3xl transform -translate-y-1/2 translate-x-1/3"></div>
+                    <div class="absolute bottom-0 left-0 sm:left-10 w-48 sm:w-64 h-48 sm:h-64 bg-[#d94a11]/10 rounded-full blur-xl sm:blur-2xl transform translate-y-1/3 -translate-x-1/4 sm:translate-x-0"></div>
+                    
+                    <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between text-center lg:text-left gap-8">
+                        <div class="w-full lg:w-3/5">
+                            <span class="bg-[#d94a11] text-white text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full uppercase tracking-widest mb-4 inline-block shadow-sm">Everything You Need</span>
+                            <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-[#d94a11] leading-tight mb-4 sm:mb-6 tracking-tight">
+                                All Kinds of Food<br>Delivered in <span class="inline-flex items-center justify-center px-4 sm:px-6 py-2 ml-1 rounded-full bg-white shadow-xl border-2 border-[#ffb05c] align-middle transform transition-transform hover:-translate-y-1 relative overflow-hidden whitespace-nowrap">
+                                    <span class="absolute inset-0 bg-[#ffb05c] opacity-30"></span>
+                                    <span class="relative z-10 flex items-center text-[#d94a11] font-black tracking-tight text-3xl sm:text-4xl lg:text-5xl leading-none">
+                                        15 Mins!
+                                    </span>
+                                </span>
+                            </h1>
+                            <div class="mt-6 sm:mt-8 max-w-lg mx-auto lg:mx-0">
+                                <div class="flex items-start gap-4 mb-6">
+                                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white shadow-[0_4px_15px_rgba(0,0,0,0.05)] flex items-center justify-center text-[#d94a11] shrink-0 transform -rotate-12 mt-1">
+                                        <i class="fa-solid fa-basket-shopping text-lg sm:text-xl"></i>
+                                    </div>
+                                    <p class="text-base sm:text-lg text-gray-700 leading-relaxed text-left">
+                                        Download our app today and get <strong class="text-[#d94a11] font-black tracking-wide uppercase text-sm sm:text-base mx-0.5">Free Delivery</strong> on your first 3 orders over <strong class="text-[#d94a11] font-black tracking-wide text-sm sm:text-base mx-0.5">₹499</strong>.
+                                    </p>
+                                </div>
+                                
+                                <div class="flex flex-col sm:flex-row items-center gap-4">
+                                    <button class="w-full sm:w-auto bg-[#d94a11] hover:bg-[#9c2b03] text-white font-bold py-3.5 px-8 rounded-full shadow-[0_8px_20px_rgba(26,92,83,0.3)] transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3">
+                                        <i class="fa-solid fa-mobile-screen-button text-lg"></i> Download App
+                                    </button>
+                                    <div class="w-full sm:w-auto bg-white/60 backdrop-blur-md px-5 py-3 rounded-full border border-white shadow-sm flex items-center justify-center gap-3 transition-transform hover:scale-105 cursor-default">
+                                        <span class="text-sm font-semibold text-gray-700">Use code:</span>
+                                        <span class="bg-[#ffb05c] text-[#d94a11] font-black px-3 py-1 rounded-full text-sm tracking-widest uppercase border border-[#d94a11]/20 border-dashed shadow-inner">FOOD15</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-2/5 relative flex justify-center h-[200px] sm:h-[300px]">
+                            <div class="w-48 h-48 sm:w-72 sm:h-72 bg-[#d94a11]/10 rounded-full flex items-center justify-center relative animate-[spin_30s_linear_infinite]"></div>
+                            <div class="absolute inset-0 flex items-center justify-center transform hover:scale-110 transition-transform duration-500">
+                                <i class="fa-solid fa-basket-shopping text-[100px] sm:text-[150px] text-[#d94a11] absolute animate-[bounce_3s_ease-in-out_infinite]"></i>
+                                <i class="fa-solid fa-wheat-awn text-4xl sm:text-6xl text-[#d94a11]/30 absolute top-4 sm:-top-4 right-8 sm:right-10 animate-[bounce_4s_ease-in-out_infinite]" style="animation-delay: 0.5s;"></i>
+                                <i class="fa-solid fa-bottle-droplet text-4xl sm:text-6xl text-[#d94a11]/30 absolute bottom-0 sm:bottom-4 left-8 sm:left-10 animate-[bounce_3.5s_ease-in-out_infinite]" style="animation-delay: 1s;"></i>
+                                <i class="fa-solid fa-egg text-3xl sm:text-5xl text-[#d94a11] absolute top-8 sm:top-10 left-4 sm:left-10 animate-[bounce_2.5s_ease-in-out_infinite]" style="animation-delay: 1.5s;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="min-w-full relative p-6 sm:p-10 lg:p-14 overflow-hidden shrink-0 flex items-center justify-end min-h-[400px] sm:min-h-[500px]">
+                    <!-- Full Background Image -->
+                    <div class="absolute inset-0">
+                        <img src="breakfast_background.jpg" alt="Breakfast" class="w-full h-full object-cover">
+                        <!-- Dark overlay -->
+                        <div class="absolute inset-0 bg-black/30"></div>
+                    </div>
+                    
+                    <!-- Modern Floating Text Panel -->
+                    <div class="relative z-10 w-full lg:w-[45%] bg-white/95 backdrop-blur-md p-8 sm:p-12 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/40 flex flex-col items-start text-left transform transition hover:-translate-y-2 duration-500">
+                        <span class="bg-gray-100 text-gray-800 text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full uppercase tracking-widest mb-6 inline-block shadow-sm">Morning Special</span>
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 leading-tight mb-4 tracking-tight">
+                            Rise & Shine<br>Breakfast <span class="text-gray-500">Combo</span>
+                        </h1>
+                        <p class="text-base sm:text-lg text-gray-600 leading-relaxed mb-8 font-medium">
+                            Start your day right with our breakfast combo. Baked bread, eggs, fluffy pancakes, and coffee delivered hot to you.
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <span class="text-gray-600 font-black text-sm tracking-widest uppercase bg-gray-50 px-4 py-2 rounded-full border border-gray-200">-20% Today</span>
+                            <button class="bg-gray-900 hover:bg-black text-white font-bold py-3.5 px-8 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.2)] transform hover:-translate-y-1 transition-all duration-300">
+                                Order Breakfast
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="min-w-full relative p-6 sm:p-10 lg:p-14 overflow-hidden shrink-0 flex items-center justify-start min-h-[400px] sm:min-h-[500px]">
+                    <!-- Full Background Image -->
+                    <div class="absolute inset-0">
+                        <img src="bright_gym_background.jpg" alt="Wellness & Fitness" class="w-full h-full object-cover">
+                        <!-- Dark overlay -->
+                        <div class="absolute inset-0 bg-black/20"></div>
+                    </div>
+                    
+                    <!-- Modern Floating Text Panel -->
+                    <div class="relative z-10 w-full lg:w-[45%] bg-white/95 backdrop-blur-md p-8 sm:p-12 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/40 flex flex-col items-start text-left transform transition hover:-translate-y-2 duration-500">
+                        <span class="bg-gray-100 text-gray-800 text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full uppercase tracking-widest mb-6 inline-block shadow-sm">Wellness Fuel</span>
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 leading-tight mb-4 tracking-tight">
+                            Refresh &<br>Recover <span class="text-gray-500">+</span>
+                        </h1>
+                        <p class="text-base sm:text-lg text-gray-600 leading-relaxed mb-8 font-medium">
+                            Crush your goals with our protein shakes, energy bars, and fruit bowls. Peak performance starts here.
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <button class="bg-gray-900 hover:bg-black text-white font-bold py-3.5 px-8 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.2)] transform hover:-translate-y-1 transition-all duration-300">
+                                Shop Wellness
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Indicators/Dots -->
+            <div class="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
+                <button class="carousel-dot w-6 sm:w-8 h-2.5 sm:h-3 rounded-full bg-[#ffb05c] transition-all duration-300" onclick="goToSlide(0)"></button>
+                <button class="carousel-dot w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full bg-white/40 transition-all duration-300" onclick="goToSlide(1)"></button>
+                <button class="carousel-dot w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full bg-white/40 transition-all duration-300" onclick="goToSlide(2)"></button>
+            </div>
+        </div>
+
+        <!-- Dry Fruits Section -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 flex items-center gap-3">
+                    Dry Fruits
+                </h2>
+                <button class="text-[#d94a11] font-bold text-sm sm:text-base hover:underline">View All <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Dry Fruit 1 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/almonds_bowl_1781787309518.jpg" alt="Organic Almonds" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Almonds</h3>
+                        <p class="text-xs text-gray-500 mb-2">250g • Quality</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹539</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dry Fruit 2 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/cashews_bowl_1781787321207.jpg" alt="Roasted Cashews" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Roasted Cashews</h3>
+                        <p class="text-xs text-gray-500 mb-2">250g • Crunchy</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹606</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dry Fruit 3 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/pistachios_bowl_1781787332412.jpg" alt="Salted Pistachios" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Salted Pistachios</h3>
+                        <p class="text-xs text-gray-500 mb-2">200g • Iranian</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹809</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dry Fruit 4 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/walnuts_bowl_1781787343852.jpg" alt="Kashmiri Walnuts" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Kashmiri Walnuts</h3>
+                        <p class="text-xs text-gray-500 mb-2">250g • Brain Booster</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹674</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bakery Section -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 flex items-center gap-3">
+                    Bakery
+                </h2>
+                <button class="text-[#d94a11] font-bold text-sm sm:text-base hover:underline">View All <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Bakery 1 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/bread_loaf_1781787369550.jpg" alt="Artisan Sourdough" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Sourdough</h3>
+                        <p class="text-xs text-gray-500 mb-2">1 Loaf • Baked</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹203</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bakery 2 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/croissants_1781787380403.jpg" alt="Butter Croissants" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Butter Croissants</h3>
+                        <p class="text-xs text-gray-500 mb-2">Pack of 4 • Flaky & Rich</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹297</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bakery 3 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/muffins_1781787391196.jpg" alt="Blueberry Muffins" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Blueberry Muffins</h3>
+                        <p class="text-xs text-gray-500 mb-2">Pack of 4 • Crumble Top</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹378</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bakery 4 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/cookies_1781787403324.jpg" alt="Choco Chip Cookies" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Choco Chip Cookies</h3>
+                        <p class="text-xs text-gray-500 mb-2">Box of 6 • Chewy</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹257</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vegetables Section -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 flex items-center gap-3">
+                    Vegetables
+                </h2>
+                <button class="text-[#d94a11] font-bold text-sm sm:text-base hover:underline">View All <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Veg 1 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/tomatoes_1781788174669.jpg" alt="Vine Tomatoes" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Vine Tomatoes</h3>
+                        <p class="text-xs text-gray-500 mb-2">500g • Local</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹61</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Veg 2 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/potatoes_1781788186276.jpg" alt="Organic Potatoes" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Potatoes</h3>
+                        <p class="text-xs text-gray-500 mb-2">1kg • Unwashed</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹47</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Veg 3 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/onions_1781788197892.jpg" alt="Red Onions" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Red Onions</h3>
+                        <p class="text-xs text-gray-500 mb-2">1kg • Large</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹54</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Veg 4 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/spinach_1781788212504.jpg" alt="Fresh Spinach" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Spinach</h3>
+                        <p class="text-xs text-gray-500 mb-2">250g • Washed</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹34</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dairy & Eggs Section -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 flex items-center gap-3">
+                    Dairy & Eggs
+                </h2>
+                <button class="text-[#d94a11] font-bold text-sm sm:text-base hover:underline">View All <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Dairy 1 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/milk_1781788225780.jpg" alt="Organic Milk" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Milk</h3>
+                        <p class="text-xs text-gray-500 mb-2">1L • Full Cream</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹108</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dairy 2 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/eggs_1781788237199.jpg" alt="Farm Fresh Eggs" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Eggs</h3>
+                        <p class="text-xs text-gray-500 mb-2">6 Pack • Brown</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹88</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dairy 3 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/butter_1781788249917.jpg" alt="Creamy Butter" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Creamy Butter</h3>
+                        <p class="text-xs text-gray-500 mb-2">500g • Salted</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹378</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dairy 4 -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+                    <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                        <img src="assets/images/cheese_1781788262400.jpg" alt="Premium Cheddar" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Cheddar</h3>
+                        <p class="text-xs text-gray-500 mb-2">200g • Aged</p>
+                        <div class="flex items-center justify-between">
+                            <div class="font-black text-gray-900 text-sm sm:text-lg">₹297</div>
+                            <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Header -->
+        <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 sm:mb-8 gap-4 w-full">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 shrink-0 flex items-center gap-3">
+                Zestify 
+            </h2>
+            
+            <div class="w-full xl:w-auto overflow-visible pb-2 xl:pb-0 -mx-4 px-4 xl:mx-0 xl:px-0">
+                <div class="flex flex-nowrap gap-2 sm:gap-3 items-center w-max">
+                    <!-- All Categories -->
+                    <div class="relative group">
+                        <button class="bg-[#d94a11] text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold shadow-md hover:bg-[#BD3B0A] transition shrink-0 flex items-center gap-1.5">
+                            All Categories <i class="fa-solid fa-caret-down group-hover:rotate-180 transition-transform duration-300"></i>
+                        </button>
+                        <div class="absolute left-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 transform origin-top scale-95 group-hover:scale-100">
+                            <ul class="py-2 text-sm text-gray-700">
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors"><i class="fa-solid fa-apple-whole mr-2 text-gray-400"></i>Fruits</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors"><i class="fa-solid fa-carrot mr-2 text-gray-400"></i>Vegetables</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors"><i class="fa-solid fa-cheese mr-2 text-gray-400"></i>Dairy & Eggs</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors"><i class="fa-solid fa-bread-slice mr-2 text-gray-400"></i>Bakery</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors"><i class="fa-solid fa-drumstick-bite mr-2 text-gray-400"></i>Meat & Seafood</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="relative group">
+                        <button class="bg-white border border-gray-200 text-gray-700 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-50 transition shrink-0 flex items-center gap-1.5">
+                            Price <i class="fa-solid fa-caret-down group-hover:rotate-180 transition-transform duration-300"></i>
+                        </button>
+                        <div class="absolute left-0 top-full mt-2 w-40 bg-white border border-gray-100 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 transform origin-top scale-95 group-hover:scale-100">
+                            <ul class="py-2 text-sm text-gray-700">
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors">Low to High</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors">High to Low</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors">Under ₹100</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors">₹100 - ₹500</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Review -->
+                    <div class="relative group">
+                        <button class="bg-white border border-gray-200 text-gray-700 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-50 transition shrink-0 flex items-center gap-1.5">
+                            Review <i class="fa-solid fa-caret-down group-hover:rotate-180 transition-transform duration-300"></i>
+                        </button>
+                        <div class="absolute left-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 transform origin-top scale-95 group-hover:scale-100">
+                            <ul class="py-2 text-sm text-gray-700">
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors flex items-center gap-2"><div class="flex text-yellow-400 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div> & Up</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors flex items-center gap-2"><div class="flex text-yellow-400 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></div> & Up</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors flex items-center gap-2"><div class="flex text-yellow-400 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></div> & Up</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+
+                    <!-- All Filters -->
+                    <div class="relative group">
+                        <button class="bg-white border border-gray-200 text-gray-700 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-50 transition shrink-0 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-gray-400"></i> All Filters <span class="bg-gray-100 text-gray-600 px-1.5 rounded-md text-[10px] sm:text-xs font-bold">3</span>
+                        </button>
+                        <div class="absolute left-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 transform origin-top scale-95 group-hover:scale-100 p-4">
+                            <label class="flex items-center gap-2 mb-3 cursor-pointer group/label">
+                                <input type="checkbox" class="w-4 h-4 rounded text-[#d94a11] focus:ring-[#d94a11] border-gray-300" checked>
+                                <span class="text-sm text-gray-700 group-hover/label:text-[#d94a11] font-medium">In Stock Only</span>
+                            </label>
+                            <label class="flex items-center gap-2 mb-3 cursor-pointer group/label">
+                                <input type="checkbox" class="w-4 h-4 rounded text-[#d94a11] focus:ring-[#d94a11] border-gray-300" checked>
+                                <span class="text-sm text-gray-700 group-hover/label:text-[#d94a11] font-medium">Organic Only</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group/label">
+                                <input type="checkbox" class="w-4 h-4 rounded text-[#d94a11] focus:ring-[#d94a11] border-gray-300" checked>
+                                <span class="text-sm text-gray-700 group-hover/label:text-[#d94a11] font-medium">On Sale</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="w-px h-6 bg-gray-200 mx-1 hidden sm:block shrink-0"></div>
+                    
+                    <!-- Sort by -->
+                    <div class="relative group">
+                        <button class="bg-white border border-gray-200 text-gray-700 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-50 transition shrink-0 flex items-center gap-1.5">
+                            Sort by <i class="fa-solid fa-caret-down group-hover:rotate-180 transition-transform duration-300"></i>
+                        </button>
+                        <div class="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 transform origin-top scale-95 group-hover:scale-100">
+                            <ul class="py-2 text-sm text-gray-700">
+                                <li><a href="#" class="block px-4 py-2 bg-[#fff7ed] text-[#d94a11] font-semibold">Recommended</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors">Newest Arrivals</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors">Best Selling</a></li>
+                                <li><a href="#" class="block px-4 py-2 hover:bg-[#fff7ed] hover:text-[#d94a11] transition-colors">Customer Rating</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid: Adjusted for macbook screens using xl & lg smartly -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6 mb-12">
+            
+            <!-- Product 1 -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between" onclick="showPage('product')">
+                <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                    <img src="https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Avocado" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Hass Avocado</h3>
+                    <p class="text-xs text-gray-500 mb-2">500 gm • Pack of 2</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="font-black text-gray-900 text-sm sm:text-lg">₹608</div>
+                        <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between" onclick="showPage('product')">
+                <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                    <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Coca-Cola" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Coca-Cola Classic Cans</h3>
+                    <p class="text-xs text-gray-500 mb-2">330 ml • Pack of 2</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="font-black text-gray-900 text-sm sm:text-lg">₹54</div>
+                        <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between" onclick="showPage('product')">
+                <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                    <img src="https://images.unsplash.com/photo-1607532941433-304659e8198a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Salad" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Garden Salad</h3>
+                    <p class="text-xs text-gray-500 mb-2">500 gm</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="font-black text-gray-900 text-sm sm:text-lg">₹201</div>
+                        <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                            <i class="fa-solid fa-plus text-[10px]"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between" onclick="showPage('product')">
+                <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                    <span class="absolute top-2 left-2 bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded z-10">Process food</span>
+                    <img src="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Process Food" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Frozen Mixed Veggies</h3>
+                    <p class="text-xs text-gray-500 mb-2">500 gm • Ready to Cook</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="font-black text-gray-900 text-sm sm:text-lg">₹99</div>
+                        <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 5 -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between" onclick="showPage('product')">
+                <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                    <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Beef" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Beef Bone-In</h3>
+                    <p class="text-xs text-gray-500 mb-2">500 gm</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="font-black text-gray-900 text-sm sm:text-lg">₹471</div>
+                        <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 6 -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between" onclick="showPage('product')">
+                <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                    <span class="absolute top-2 left-2 bg-green-100 text-[#d94a11] text-[10px] font-bold px-2 py-1 rounded z-10">Organic</span>
+                    <img src="https://images.unsplash.com/photo-1550258987-190a2d41a8ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Pineapple" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Pineapple</h3>
+                    <p class="text-xs text-gray-500 mb-2">1 pc</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="font-black text-gray-900 text-sm sm:text-lg">₹115</div>
+                        <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 7 -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between" onclick="showPage('product')">
+                <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                    <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Flour" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Whole Wheat Flour</h3>
+                    <p class="text-xs text-gray-500 mb-2">1 Kg • Unbleached</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="font-black text-gray-900 text-sm sm:text-lg">₹674</div>
+                        <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 8 -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between" onclick="showPage('product')">
+                <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                    <span class="absolute top-2 left-2 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded z-10">Frozen</span>
+                    <img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Salmon" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Atlantic Salmon</h3>
+                    <p class="text-xs text-gray-500 mb-2">300 gm • Fillet</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="font-black text-gray-900 text-sm sm:text-lg">₹1214</div>
+                        <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 9 -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between" onclick="showPage('product')">
+                <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                    <img src="https://images.unsplash.com/photo-1621263764928-df1444c5e859?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Orange Juice" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Florida Orange Juice</h3>
+                    <p class="text-xs text-gray-500 mb-2">1 Ltr • 100% Pure</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="font-black text-gray-900 text-sm sm:text-lg">₹107</div>
+                        <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 10 -->
+            <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between" onclick="showPage('product')">
+                <div class="h-32 sm:h-48 mb-4 rounded-xl overflow-hidden bg-gray-50 relative">
+                    <img src="https://images.unsplash.com/photo-1587132137056-bfbf0166836e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Banana" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-sm sm:text-base mb-1">Cavendish Bananas</h3>
+                    <p class="text-xs text-gray-500 mb-2">6 pcs</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="font-black text-gray-900 text-sm sm:text-lg">₹61</div>
+                        <button class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-900 text-xs sm:text-sm font-bold flex items-center gap-1.5 hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all shadow-sm transform hover:-translate-y-0.5">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add
+                            </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: Shadcn Pagination Component -->
+        <div class="mt-12 mb-16 flex justify-center">
+            <nav role="navigation" aria-label="pagination" class="mx-auto flex w-full justify-center">
+              <ul class="flex flex-row items-center gap-1">
+                <!-- Previous -->
+                <li>
+                  <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-gray-100 hover:text-gray-900 h-10 px-4 py-2 gap-1 pl-2.5">
+                    <i class="fa-solid fa-chevron-left w-4 h-4 flex items-center justify-center"></i>
+                    <span class="hidden sm:block">Previous</span>
+                  </button>
+                </li>
+                
+                <!-- Page 1 (Active) -->
+                <li>
+                  <button aria-current="page" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-white hover:bg-gray-100 hover:text-gray-900 h-10 w-10">
+                    1
+                  </button>
+                </li>
+                
+                <!-- Page 2 -->
+                <li>
+                  <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-gray-100 hover:text-gray-900 h-10 w-10 text-gray-600">
+                    2
+                  </button>
+                </li>
+                
+                <!-- Page 3 -->
+                <li>
+                  <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-gray-100 hover:text-gray-900 h-10 w-10 text-gray-600">
+                    3
+                  </button>
+                </li>
+                
+                <!-- Ellipsis -->
+                <li>
+                  <span aria-hidden="true" class="flex h-9 w-9 items-center justify-center text-gray-500">
+                    <i class="fa-solid fa-ellipsis h-4 w-4 flex items-center justify-center"></i>
+                    <span class="sr-only">More pages</span>
+                  </span>
+                </li>
+                
+                <!-- Last Page -->
+                <li>
+                  <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-gray-100 hover:text-gray-900 h-10 w-10 text-gray-600">
+                    20
+                  </button>
+                </li>
+                
+                <!-- Next -->
+                <li>
+                  <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-gray-100 hover:text-gray-900 h-10 px-4 py-2 gap-1 pr-2.5">
+                    <span class="hidden sm:block">Next</span>
+                    <i class="fa-solid fa-chevron-right w-4 h-4 flex items-center justify-center"></i>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+        </div>
+
+        <!-- NEW: Featured Deals Layout -->
+        <div class="mb-10 sm:mb-16">
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6 flex items-center justify-between">Deals of the Week <a href="#" class="text-sm font-bold text-[#d94a11] hover:underline">View All</a></h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                <!-- Deal 1 -->
+                <div class="bg-white rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all group flex flex-col cursor-pointer relative">
+                    <div class="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-md">Save 20%</div>
+                    <div class="h-48 sm:h-56 bg-gray-50 flex items-center justify-center p-6 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Strawberries" class="w-full h-full object-cover rounded-xl transform group-hover:scale-105 transition-transform duration-500 shadow-sm">
+                    </div>
+                    <div class="p-6 sm:p-8 flex flex-col flex-1">
+                        <h3 class="font-bold text-gray-900 text-lg sm:text-xl mb-2 group-hover:text-[#d94a11] transition-colors">Strawberries</h3>
+                        <p class="text-gray-500 text-sm mb-4 line-clamp-2">Sweet, juicy, and perfectly ripe strawberries from local farms.</p>
+                        <div class="flex items-center justify-between mt-auto">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl font-black text-gray-900">₹269</span>
+                                <span class="text-sm text-gray-400 line-through font-medium">₹338</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deal 2 -->
+                <div class="bg-white rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all group flex flex-col cursor-pointer relative">
+                    <div class="absolute top-4 left-4 z-10 bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-md">BOGO Free</div>
+                    <div class="h-48 sm:h-56 bg-gray-50 flex items-center justify-center p-6 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1596199050105-6d5d32222916?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Tomatoes" class="w-full h-full object-cover rounded-xl transform group-hover:scale-105 transition-transform duration-500 shadow-sm">
+                    </div>
+                    <div class="p-6 sm:p-8 flex flex-col flex-1">
+                        <h3 class="font-bold text-gray-900 text-lg sm:text-xl mb-2 group-hover:text-[#d94a11] transition-colors">Vine Tomatoes</h3>
+                        <p class="text-gray-500 text-sm mb-4 line-clamp-2">Rich, flavorful tomatoes still on the vine. Perfect for salads and sauces.</p>
+                        <div class="flex items-center justify-between mt-auto">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl font-black text-gray-900">₹120</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deal 3 -->
+                <div class="bg-white rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all group flex flex-col cursor-pointer relative">
+                    <div class="absolute top-4 left-4 z-10 bg-[#d94a11] text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-md">Baked</div>
+                    <div class="h-48 sm:h-56 bg-gray-50 flex items-center justify-center p-6 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Bread" class="w-full h-full object-cover rounded-xl transform group-hover:scale-105 transition-transform duration-500 shadow-sm">
+                    </div>
+                    <div class="p-6 sm:p-8 flex flex-col flex-1">
+                        <h3 class="font-bold text-gray-900 text-lg sm:text-xl mb-2 group-hover:text-[#d94a11] transition-colors">Sourdough Bread</h3>
+                        <p class="text-gray-500 text-sm mb-4 line-clamp-2">Crispy crust with a soft, chewy interior. Baked every morning.</p>
+                        <div class="flex items-center justify-between mt-auto">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl font-black text-gray-900">₹162</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: Fruit Hero Section -->
+        <div class="bg-gradient-to-r from-[#fff7ed] to-[#ffb05c] border border-[#ffb05c] rounded-2xl sm:rounded-[3rem] p-8 sm:p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between overflow-hidden relative shadow-sm mb-20 lg:mb-24 group gap-10">
+            <div class="absolute -left-10 -top-10 w-64 h-64 bg-[#d94a11]/10 rounded-full blur-2xl transform group-hover:scale-110 transition-transform duration-700"></div>
+            <div class="flex-1 max-w-2xl relative z-10 text-center md:text-left">
+                <span class="bg-white/30 backdrop-blur-2xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.1)] text-[#d94a11] text-xs sm:text-sm font-bold px-5 py-2 rounded-full uppercase tracking-widest mb-6 inline-block relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full duration-1000 ease-in-out transition-transform"></div>
+                    <span class="relative z-10 drop-shadow-sm">From the Farm</span>
+                </span>
+                <h2 class="font-black text-[#d94a11] mb-8 leading-[1.05] tracking-tight">
+                    <span class="block text-3xl sm:text-4xl lg:text-5xl text-[#d94a11]/80 font-extrabold mb-1 tracking-normal">Quality &</span>
+                    <span class="block text-6xl sm:text-7xl lg:text-[6.5rem] xl:text-[8rem] drop-shadow-sm">Fruits</span>
+                </h2>
+                <p class="text-gray-700 text-lg sm:text-xl mb-8 leading-relaxed max-w-lg mx-auto md:mx-0">Taste the difference with our hand-picked fruits delivered straight from local farms to your door.</p>
+                <button class="bg-[#d94a11] hover:bg-[#9c2b03] text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-[#d94a11]/30 flex items-center justify-center gap-2 transition-all hover:-translate-y-1 mx-auto md:mx-0 text-lg w-max">
+                    Shop Now <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="w-full md:w-1/2 relative flex justify-center items-center shrink-0">
+                <div class="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
+                    <div class="absolute inset-0 bg-[#d94a11]/20 rounded-full blur-2xl animate-pulse"></div>
+                    <img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=2070&auto=format&fit=crop&w=800&q=80" alt="Fruits" class="relative z-10 w-full h-full object-cover rounded-full shadow-2xl border-4 border-white transform group-hover:rotate-6 transition-transform duration-700">
+                    
+                    <!-- Floating Badge -->
+                    <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl z-20 border border-gray-50 transform -rotate-6 animate-bounce" style="animation-duration: 3s;">
+                        <span class="font-bold text-[#d94a11] text-sm sm:text-base flex items-center gap-2"><div class="w-8 h-8 rounded-full bg-[#ffb05c] flex items-center justify-center"><i class="fa-solid fa-star text-[#d94a11]"></i></div> Quality</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: Vegetarian Section (Mirrored Split Layout) -->
+        <div class="bg-gradient-to-l from-emerald-50 to-teal-50 border border-emerald-100 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 lg:p-16 flex flex-col md:flex-row-reverse items-center justify-between overflow-hidden relative shadow-sm mb-20 lg:mb-24 group gap-10">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-teal-200/30 rounded-full blur-2xl transform group-hover:scale-110 transition-transform duration-700"></div>
+            
+            <div class="flex-1 max-w-2xl relative z-10 text-center md:text-left">
+                <span class="bg-white/50 backdrop-blur-md border border-white shadow-sm text-teal-700 text-xs sm:text-sm font-bold px-5 py-2 rounded-full uppercase tracking-widest mb-6 inline-block relative overflow-hidden group">
+                    <span class="relative z-10 drop-shadow-sm">Daily Harvest</span>
+                </span>
+                
+                <h2 class="font-black text-gray-900 mb-8 leading-[1.05] tracking-tight">
+                    <span class="block text-3xl sm:text-4xl lg:text-5xl text-teal-700 font-extrabold mb-1 tracking-normal">Healthy</span>
+                    <span class="block text-6xl sm:text-7xl lg:text-[6.5rem] xl:text-[8rem] text-teal-800 drop-shadow-sm">Veggies</span>
+                </h2>
+                
+                <p class="text-gray-700 text-lg sm:text-xl mb-8 leading-relaxed max-w-lg mx-auto md:mx-0">Boost your immunity with our vegetables. Sourced directly from local farmers to bring you the best quality greens.</p>
+                
+                <button class="bg-teal-700 hover:bg-teal-800 text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-teal-700/30 flex items-center justify-center gap-2 transition-all hover:-translate-y-1 mx-auto md:mx-0 text-lg w-max">
+                    Shop Vegetables <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="w-full md:w-1/2 relative flex justify-center items-center shrink-0">
+                <div class="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
+                    <div class="absolute inset-0 bg-white/5 rounded-full animate-pulse"></div>
+                    <img src="https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Vegetables" class="relative z-10 w-full h-full object-cover rounded-full shadow-2xl border-4 border-white transform group-hover:-rotate-6 transition-transform duration-700">
+                    
+                    <!-- Floating Badge -->
+                    <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-2xl shadow-xl z-20 border border-gray-100 flex items-center gap-4 animate-bounce" style="animation-duration: 4s;">
+                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0"><i class="fa-solid fa-leaf text-green-600 text-xl"></i></div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Quality</p>
+                            <p class="font-black text-gray-900">100% Quality</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: Promotional Banner at Bottom -->
+        <div class="bg-gradient-to-r from-gray-50 via-white to-[#ffb05c]/10 border border-gray-200 rounded-2xl sm:rounded-[3rem] p-8 sm:p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between relative shadow-sm mb-20 group overflow-hidden">
+            <!-- Color Accent Blob -->
+            <div class="absolute -right-20 -top-20 w-96 h-96 bg-[#d94a11]/10 rounded-full blur-3xl transform group-hover:scale-110 transition-transform duration-700"></div>
+            <div class="relative z-10 text-center md:text-left mb-8 md:mb-0 md:pr-10">
+                <span class="bg-[#d94a11]/10 text-[#d94a11] text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full uppercase tracking-widest mb-6 inline-block">Special Reward</span>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">GET 10% CASHBACK<br>ON SHOPPING <span class="text-[#d94a11] text-5xl sm:text-6xl lg:text-8xl block mt-2">₹203</span></h2>
+                <p class="text-gray-600 text-base sm:text-lg max-w-lg mx-auto md:mx-0 font-medium">Earn immediate cashback on your daily grocery shopping. Use it on your next purchase!</p>
+            </div>
+            
+            <div class="relative z-10 flex flex-col sm:flex-row gap-4 shrink-0">
+                <button class="bg-gray-900 hover:bg-black text-white font-bold py-4 px-10 rounded-full shadow-lg flex items-center justify-center gap-3 transition-transform hover:-translate-y-1 text-lg">
+                    Claim Reward <i class="fa-solid fa-gift"></i>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- PAGE 1: Product Detail Page -->
+    <main id="page-product" class="hidden w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 mt-4 sm:mt-6">
+        <div class="mb-4 sm:mb-6 overflow-x-auto no-scrollbar whitespace-nowrap pb-2">
+            <h1 class="text-xl sm:text-3xl font-bold text-gray-800">All category / <span class="text-red-500">Bobs Red</span></h1>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-6 sm:gap-10 xl:gap-16">
+            <div class="w-full lg:w-1/2">
+                <div class="relative bg-[#f8f5f0] rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 mb-4 border border-gray-100 flex items-center justify-center min-h-[300px] sm:min-h-[500px]">
+                    <span class="absolute top-4 sm:top-6 left-4 sm:left-6 bg-[#2a685f] text-white text-xs sm:text-sm font-bold py-1 sm:py-1.5 px-3 sm:px-4 rounded-full">Free Delivery</span>
+                    <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Bobs Red Mill Flour" class="max-h-[250px] sm:max-h-[400px] object-contain mix-blend-multiply rounded-xl">
+                </div>
+                <div class="flex gap-2 sm:gap-4 overflow-x-auto no-scrollbar pb-2">
+                    <button class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 bg-[#f8f5f0] border-2 border-[#d94a11] rounded-xl flex items-center justify-center p-2"><img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&q=80" class="max-h-full mix-blend-multiply" alt="Thumb"></button>
+                    <button class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 bg-[#f8f5f0] border-2 border-transparent hover:border-gray-200 rounded-xl flex items-center justify-center p-2"><img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&q=80" class="max-h-full mix-blend-multiply opacity-70" alt="Thumb"></button>
+                    <button class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 bg-[#f8f5f0] border-2 border-transparent hover:border-gray-200 rounded-xl flex items-center justify-center p-2"><img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&q=80" class="max-h-full mix-blend-multiply opacity-70" alt="Thumb"></button>
+                    <button class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 bg-[#f8f5f0] border-2 border-transparent hover:border-gray-200 rounded-xl flex items-center justify-center p-2"><img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&q=80" class="max-h-full mix-blend-multiply opacity-70" alt="Thumb"></button>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/2 flex flex-col pt-2">
+                <div class="flex items-center gap-2 text-red-500 font-bold text-sm sm:text-lg mb-3 sm:mb-4">
+                    <i class="fa-regular fa-clock"></i>
+                    <span>270 : 13 : 10 : 32</span>
+                </div>
+
+                <p class="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-2">Bavmo grocery</p>
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">Bobs red mill whole wheat organic flour</h2>
+                
+                <div class="flex flex-wrap items-center gap-2 mb-4 sm:mb-6">
+                    <i class="fa-solid fa-star text-yellow-400"></i>
+                    <span class="font-bold text-gray-800 text-sm sm:text-base">4.5 Rating</span>
+                    <a href="#" class="text-gray-500 text-xs sm:text-sm hover:underline">(15 reviews)</a>
+                </div>
+
+                <div class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6 flex items-start">
+                    ₹674.<span class="text-xl sm:text-2xl mt-1">00</span>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8 border border-gray-200 w-full xl:w-max xl:pr-8">
+                    <div class="bg-[#ffb3c7] text-black font-bold px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm shrink-0">Klarna.</div>
+                    <div class="text-xs sm:text-sm text-gray-600">
+                        Split in to 3 interest-free<br>
+                        payments <span class="font-bold text-gray-900">₹224.10</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
+                    <button class="w-full sm:flex-1 flex items-center justify-center gap-2 border-2 border-gray-200 py-3 sm:py-3.5 px-6 rounded-full font-bold text-gray-700 hover:bg-gray-50 transition">
+                        <i class="fa-solid fa-basket-shopping text-gray-500"></i>
+                        Add to basket
+                    </button>
+                    <button class="w-full sm:flex-1 bg-[#ffb05c] hover:bg-[#ffd699] py-3 sm:py-3.5 px-6 rounded-full font-bold text-gray-900 transition shadow-sm" onclick="showPage('checkout')">
+                        Buy now
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-gray-100">
+                    <button class="text-gray-600 font-semibold hover:text-red-500 transition flex items-center gap-2 text-xs sm:text-sm uppercase">
+                        <i class="fa-regular fa-heart text-base sm:text-lg"></i>
+                        Add to Wishlist
+                    </button>
+                    <button class="text-gray-600 font-semibold hover:text-[#d94a11] transition flex items-center gap-2 text-xs sm:text-sm uppercase">
+                        <i class="fa-solid fa-right-left text-base sm:text-lg"></i>
+                        Compare with other vendor
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+                    <div class="flex gap-2 sm:gap-3">
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition"><i class="fa-brands fa-facebook-f text-sm sm:text-base"></i></a>
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-sky-100 text-sky-500 flex items-center justify-center hover:bg-sky-200 transition"><i class="fa-brands fa-twitter text-sm sm:text-base"></i></a>
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-100 text-green-500 flex items-center justify-center hover:bg-green-200 transition"><i class="fa-brands fa-whatsapp text-sm sm:text-base"></i></a>
+                    </div>
+                    <div class="flex items-center gap-2 text-red-500 font-bold bg-red-50 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm w-full sm:w-auto justify-center">
+                        <i class="fa-solid fa-fire"></i>
+                        100 sold in last 35 hour
+                    </div>
+                </div>
+
+                <div class="text-xs sm:text-sm text-gray-600 mb-6 space-y-2">
+                    <p><span class="font-bold text-gray-800">SKU:</span> MB3442</p>
+                    <p class="leading-relaxed"><span class="font-bold text-gray-800">Categories:</span> <a href="#" class="text-[#d94a11] hover:underline">Fruits</a>, <a href="#" class="text-[#d94a11] hover:underline">Noodles</a>, <a href="#" class="text-[#d94a11] hover:underline">Juice</a>, <a href="#" class="text-[#d94a11] hover:underline">snacks</a>, <a href="#" class="text-[#d94a11] hover:underline">Tshirts</a></p>
+                </div>
+
+                <p class="text-gray-500 text-xs sm:text-sm leading-relaxed mb-6 sm:mb-8">
+                    Coconut Oil is a great-tasting, nutritious alternative to use when cooking or baking. Coconut Oil is a naturally rich source of medium chain triglycerides.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 bg-gray-50 rounded-xl p-4 sm:p-6">
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-truck text-red-400 text-xl sm:text-2xl mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Free Delivery</h4>
+                            <p class="text-[10px] sm:text-xs text-gray-500 mt-1">Apply To All Order Over ₹135</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-leaf text-green-500 text-xl sm:text-2xl mt-1"></i>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Great Daily Deal</h4>
+                            <p class="text-[10px] sm:text-xs text-gray-500 mt-1">We Providing Organic Products</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Others Store Section -->
+        <div class="mt-12 sm:mt-20 mb-10">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-2">
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Others store</h2>
+                <a href="#" class="text-red-500 font-bold text-sm sm:text-base hover:underline flex items-center gap-2">Visit stores <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <!-- Store 1 -->
+                <div class="bg-[#fff7ed] rounded-2xl p-4 sm:p-6 flex items-center justify-between">
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-[10px] sm:text-xs text-center leading-tight shadow-sm">M&M<br>Food</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-sm sm:text-lg">M&M Food Market</h3>
+                            <p class="text-gray-500 text-[10px] sm:text-sm mt-0.5 sm:mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-gray-300"></i> Delivery in 12 minute</p>
+                        </div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-bold text-green-600 shrink-0">
+                        ₹688.50
+                    </div>
+                </div>
+
+                <!-- Store 2 -->
+                <div class="bg-gray-50 rounded-2xl p-4 sm:p-6 flex items-center justify-between">
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-[#2a685f] text-white rounded-full flex items-center justify-center font-bold text-[10px] sm:text-xs text-center leading-tight shadow-sm">T&T<br>Food</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-sm sm:text-lg">T&T Food Market</h3>
+                            <p class="text-gray-500 text-[10px] sm:text-sm mt-0.5 sm:mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-gray-300"></i> Delivery in 13 minute</p>
+                        </div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-bold text-gray-900 shrink-0">
+                        ₹668.25
+                    </div>
+                </div>
+
+                <!-- Store 4 -->
+                <div class="bg-[#fcf5fb] rounded-2xl p-4 sm:p-6 flex items-center justify-between border-2 border-purple-100 relative">
+                    <span class="absolute -top-3 right-4 sm:right-6 bg-purple-700 text-white text-[8px] sm:text-[10px] font-bold py-0.5 sm:py-1 px-2 sm:px-3 rounded-md uppercase tracking-wide shadow-sm">Lower price</span>
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-[#2a685f] text-white rounded-full flex items-center justify-center font-bold text-[10px] sm:text-xs text-center leading-tight shadow-sm">LBL<br>Food</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-sm sm:text-lg">Loblaws</h3>
+                            <p class="text-gray-500 text-[10px] sm:text-sm mt-0.5 sm:mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-gray-300"></i> Delivery in 15 minute</p>
+                        </div>
+                    </div>
+                    <div class="text-lg sm:text-xl font-bold text-gray-900 shrink-0">
+                        ₹742.50
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 sm:mt-12 bg-[#1f3d51] rounded-2xl sm:rounded-[2rem] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between text-center md:text-left gap-4 sm:gap-6 shadow-md overflow-hidden relative">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                <div>
+                    <h3 class="text-xl sm:text-2xl text-white font-bold mb-1">SALE NOW ON</h3>
+                    <p class="text-gray-300 text-sm sm:text-base">Meat, Fruits, Chicken and more</p>
+                </div>
+                <button class="bg-[#297eb0] hover:bg-[#3492c9] text-white font-bold py-2.5 sm:py-3 px-6 sm:px-8 rounded-full transition shadow-lg w-full md:w-auto relative z-10 text-sm sm:text-base">Shop Sale</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- PAGE 2: Checkout Page -->
+    <main id="page-checkout" class="hidden w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-16 mt-4 sm:mt-6">
+        <div class="flex flex-col lg:flex-row gap-6 sm:gap-10 xl:gap-16">
+            <div class="w-full lg:w-3/5">
+                <div class="bg-white rounded-2xl p-4 sm:p-6 border border-gray-100 shadow-sm mb-4 sm:mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg sm:text-xl font-bold text-gray-900">Delivery information</h2>
+                        <button onclick="showAddressModal()" class="text-red-500 font-semibold text-xs sm:text-sm hover:underline flex items-center gap-1"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                    </div>
+                    <div class="flex items-start gap-3 sm:gap-4">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-location-dot text-green-500 text-lg sm:text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-xs sm:text-sm">Delivery to</h4>
+
+                            <p class="text-gray-500 text-[10px] sm:text-sm leading-relaxed"><span class="font-semibold text-gray-700">Address:</span> <span id="checkout-delivery-address" class="italic text-gray-400">No address provided. Click 'Edit' to add one.</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4 mt-6 sm:mt-8">Review item by store</h2>
+                <div class="bg-white rounded-2xl p-4 sm:p-6 border border-gray-100 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4 sm:mb-6">
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-sm sm:text-md">Shoppers grocery market</h3>
+                            <p class="text-gray-500 text-[10px] sm:text-sm">Delivery in 15 minute</p>
+                        </div>
+                    </div>
+
+                    <div id="checkout-items-list" class="space-y-4">
+                        <!-- Cart items injected here -->
+                        <div class="text-center py-6 text-gray-500 text-sm">Your cart is currently empty.</div>
+                    </div>
+                    
+                </div>
+
+
+                <!-- Removed random floating icons strip -->
+            </div>
+
+            <div class="w-full lg:w-2/5">
+                <div class="bg-white rounded-2xl p-5 sm:p-6 md:p-8 border border-gray-100 shadow-sm sticky top-6">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-5 sm:mb-6">Order summary</h2>
+                    
+                    <div class="space-y-3 sm:space-y-4 mb-5 sm:mb-6">
+                        <label class="flex items-center gap-3 cursor-pointer group transition-transform duration-200 active:scale-95">
+                            <input type="radio" name="payment_method" class="peer sr-only" checked onchange="updatePricing('online')">
+                            <div class="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-gray-300 bg-white flex items-center justify-center relative shrink-0 peer-checked:border-[#d94a11] transition-colors duration-300">
+                                <div class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[#d94a11] rounded-full opacity-0 peer-checked:opacity-100 scale-0 peer-checked:scale-100 transition-all duration-300"></div>
+                            </div>
+                            <span class="text-gray-600 font-medium peer-checked:font-bold peer-checked:text-gray-900 group-hover:text-[#d94a11] transition-colors text-xs sm:text-sm">Online Payment</span>
+                        </label>
+                        
+                        <label class="flex items-center gap-3 cursor-pointer group transition-transform duration-200 active:scale-95">
+                            <input type="radio" name="payment_method" class="peer sr-only" onchange="updatePricing('cod')">
+                            <div class="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-gray-300 bg-white flex items-center justify-center relative shrink-0 peer-checked:border-[#d94a11] transition-colors duration-300">
+                                <div class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[#d94a11] rounded-full opacity-0 peer-checked:opacity-100 scale-0 peer-checked:scale-100 transition-all duration-300"></div>
+                            </div>
+                            <span class="text-gray-600 font-medium peer-checked:font-bold peer-checked:text-gray-900 group-hover:text-[#d94a11] transition-colors text-xs sm:text-sm">Cash on delivery</span>
+                        </label>
+
+                        <label class="flex items-center gap-3 cursor-pointer group transition-transform duration-200 active:scale-95">
+                            <input type="radio" name="payment_method" class="peer sr-only" onchange="updatePricing('pos')">
+                            <div class="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-gray-300 bg-white flex items-center justify-center relative shrink-0 peer-checked:border-[#d94a11] transition-colors duration-300">
+                                <div class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[#d94a11] rounded-full opacity-0 peer-checked:opacity-100 scale-0 peer-checked:scale-100 transition-all duration-300"></div>
+                            </div>
+                            <span class="text-gray-600 font-medium peer-checked:font-bold peer-checked:text-gray-900 group-hover:text-[#d94a11] transition-colors text-xs sm:text-sm">Pos on delivery</span>
+                        </label>
+                    </div>
+
+                    <div class="flex mb-6 sm:mb-8">
+                        <input type="text" placeholder="Add Promo" class="flex-1 bg-gray-50 border border-gray-200 rounded-l-lg px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm focus:outline-none focus:border-[#d94a11] transition w-full">
+                        <button class="bg-[#BD3B0A] hover:bg-[#d94a11] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-r-lg font-bold text-xs sm:text-sm transition shrink-0">Apply</button>
+                    </div>
+
+                    <div class="space-y-3 sm:space-y-4 mb-5 sm:mb-6 border-b border-gray-100 pb-5 sm:pb-6">
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600">Subtotal</span>
+                            <span id="checkout-subtotal" class="font-bold text-gray-900">₹ 0.00</span>
+                        </div>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600">Delivery fee</span>
+                            <span id="delivery_fee_value" class="font-bold text-green-600">Free</span>
+                        </div>
+                        <div id="dynamic_fee_row" class="flex justify-between text-xs sm:text-sm text-green-600 transition-colors duration-300">
+                            <span id="dynamic_fee_label">Online Discount</span>
+                            <span id="dynamic_fee_value" class="font-bold">-₹ 0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-end mb-6 sm:mb-8">
+                        <div>
+                            <span class="text-base sm:text-lg font-bold text-gray-900 block">Total</span>
+                            <span class="text-[10px] sm:text-xs text-gray-500 font-medium">Inclusive of all taxes</span>
+                        </div>
+                        <span id="order_total" class="text-xl sm:text-2xl font-bold text-gray-900">₹ 0.00</span>
+                    </div>
+
+
+                    <button class="w-full bg-[#ffb05c] hover:bg-[#ffd699] text-gray-900 font-bold py-3 sm:py-3.5 rounded-full transition shadow-sm text-sm sm:text-base" onclick="startKlarnaFlow()">
+                        Confirm order
+                    </button>
+                </div>
+                
+                <div class="mt-4 sm:mt-6 bg-[#f8f9fa] rounded-xl p-3 sm:p-4 flex items-start gap-3 sm:gap-4 border border-gray-100">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-sm shrink-0">
+                        <i class="fa-solid fa-percent text-[#d94a11] text-xs sm:text-base"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-xs sm:text-sm">Earn 5% cash back <span class="font-normal text-gray-500">on tabby</span></h4>
+                        <a href="#" class="text-[#d94a11] text-[10px] sm:text-xs font-semibold hover:underline">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-[#fcfaf8] pt-12 pb-10 mt-16 sm:mt-20 border-t border-gray-100 relative z-10 w-full overflow-hidden">
+        <!-- Subtle Background Decoration -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-[#ffb05c] rounded-full mix-blend-multiply filter blur-3xl opacity-30 -translate-y-1/2 translate-x-1/3"></div>
+        <div class="absolute bottom-0 left-0 w-80 h-80 bg-[#d94a11]/10 rounded-full mix-blend-multiply filter blur-3xl opacity-30 translate-y-1/3 -translate-x-1/4"></div>
+
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <!-- Newsletter Banner -->
+            <div class="bg-gradient-to-br from-[#BD3B0A] via-[#9c2b03] to-[#0e312c] rounded-[2rem] p-8 sm:p-12 lg:p-16 mb-16 flex flex-col lg:flex-row items-center justify-between shadow-2xl relative overflow-hidden group">
+                <!-- Abstract floating shapes in banner -->
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-1000"></div>
+                <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-[#ffb05c] opacity-10 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-1000 delay-100"></div>
+
+                <div class="mb-8 lg:mb-0 text-white relative z-10 text-center lg:text-left w-full lg:w-1/2">
+                    <span class="inline-block bg-gradient-to-r from-[#d94a11] to-[#bd3b0a] text-white text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-widest shadow-lg">Special Offer</span>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-3 leading-tight text-white">Join Our Newsletter</h2>
+                    <p class="text-gray-300 text-sm sm:text-base font-medium opacity-90 max-w-md mx-auto lg:mx-0">Subscribe to get up to 20% OFF on your first purchase and receive daily fresh food updates.</p>
+                </div>
+                <div class="relative w-full lg:w-[480px] z-10 mt-6 lg:mt-0">
+                    <div class="flex items-center bg-white p-1.5 rounded-full shadow-2xl ring-4 ring-white/20 hover:ring-white/40 transition-all duration-500">
+                        <div class="pl-5 pr-3 text-[#BD3B0A]">
+                            <i class="fa-regular fa-envelope text-xl"></i>
+                        </div>
+                        <input type="email" placeholder="Enter your email address" class="w-full bg-transparent text-gray-900 focus:outline-none text-base font-medium placeholder-gray-400">
+                        <button class="bg-[#ffb05c] text-[#BD3B0A] hover:bg-[#ffd699] hover:shadow-lg px-8 py-3.5 rounded-full font-extrabold transition-all duration-300 whitespace-nowrap shrink-0 hover:-translate-y-0.5">
+                            Subscribe
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Links Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-10 mb-16">
+                <!-- Contact Info -->
+                <div class="lg:col-span-2 pr-0 lg:pr-8">
+                    <h3 class="font-extrabold text-[#BD3B0A] text-lg mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-headset text-[#d94a11]"></i> Contact Info
+                    </h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3 text-gray-600 hover:text-[#d94a11] transition cursor-pointer group">
+                            <div class="w-8 h-8 rounded-full bg-[#fff7ed] flex items-center justify-center text-[#d94a11] group-hover:bg-[#ffb05c] transition shrink-0">
+                                <i class="fa-solid fa-phone text-xs"></i>
+                            </div>
+                            <span class="text-sm sm:text-base mt-1.5 font-medium">+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-gray-600 hover:text-[#d94a11] transition cursor-pointer group">
+                            <div class="w-8 h-8 rounded-full bg-[#fff7ed] flex items-center justify-center text-[#d94a11] group-hover:bg-[#ffb05c] transition shrink-0">
+                                <i class="fa-regular fa-envelope text-xs"></i>
+                            </div>
+                            <span class="text-sm sm:text-base mt-1.5 font-medium">info@zestify.com</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-gray-600 hover:text-[#d94a11] transition cursor-pointer group">
+                            <div class="w-8 h-8 rounded-full bg-[#fff7ed] flex items-center justify-center text-[#d94a11] group-hover:bg-[#ffb05c] transition shrink-0">
+                                <i class="fa-solid fa-location-dot text-xs"></i>
+                            </div>
+                            <span class="text-sm sm:text-base mt-1 font-medium leading-relaxed">Zestify Store Shop 001,<br>Andheri West, Mumbai<br>Maharashtra, India</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Shop -->
+                <div>
+                    <h3 class="font-extrabold text-[#BD3B0A] text-lg mb-6">Shop</h3>
+                    <ul class="space-y-3.5">
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">New Arrivals</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">Best Sellers</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">Categories</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">Gift Cards</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <h3 class="font-extrabold text-[#BD3B0A] text-lg mb-6">Services</h3>
+                    <ul class="space-y-3.5">
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">FAQs</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">Shipping & Returns</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">Track Order</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company -->
+                <div>
+                    <h3 class="font-extrabold text-[#BD3B0A] text-lg mb-6">Company</h3>
+                    <ul class="space-y-3.5">
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">About Us</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">Career</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">Press</a></li>
+                        <li><a href="#" class="text-gray-500 hover:text-[#d94a11] hover:translate-x-1 inline-block transition-all font-medium text-sm sm:text-base">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Download App -->
+                <div class="lg:col-span-1">
+                    <h3 class="font-extrabold text-[#BD3B0A] text-lg mb-6">Download App</h3>
+                    <p class="text-gray-500 text-sm mb-6 leading-relaxed font-medium">Shop on the go with our mobile app.</p>
+                    <div class="flex flex-col gap-3">
+                        <!-- App Store Button -->
+                        <button class="bg-gray-900 hover:bg-black hover:-translate-y-1 hover:shadow-lg text-white rounded-xl px-4 py-2.5 flex items-center justify-center gap-3 transition-all duration-300 w-full xl:w-fit border border-gray-800">
+                            <i class="fa-brands fa-apple text-2xl"></i>
+                            <div class="text-left">
+                                <p class="text-[10px] leading-none text-gray-400 font-medium">Download on the</p>
+                                <p class="text-sm font-bold leading-tight mt-0.5">App Store</p>
+                            </div>
+                        </button>
+                        <!-- Google Play Button -->
+                        <button class="bg-gray-900 hover:bg-black hover:-translate-y-1 hover:shadow-lg text-white rounded-xl px-4 py-2.5 flex items-center justify-center gap-3 transition-all duration-300 w-full xl:w-fit border border-gray-800">
+                            <i class="fa-brands fa-google-play text-xl text-[#ffb05c]"></i>
+                            <div class="text-left">
+                                <p class="text-[10px] leading-none text-gray-400 font-medium">GET IT ON</p>
+                                <p class="text-sm font-bold leading-tight mt-0.5">Google Play</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="pt-8 border-t border-gray-200/60 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-1.5 hover:border-[#d94a11] hover:shadow-sm transition-all text-gray-800 font-bold text-sm">
+                        <span>🇮🇳</span>
+                        <span>INR</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] ml-1 text-gray-400"></i>
+                    </div>
+                    <p class="text-gray-500 text-sm font-medium">© Copyright 2025 - Zestify. All rights reserved.</p>
+                </div>
+                
+                <div class="flex items-center gap-3 text-2xl text-gray-400">
+                    <i class="fa-brands fa-cc-mastercard hover:text-orange-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer"></i>
+                    <i class="fa-brands fa-cc-visa hover:text-blue-600 hover:-translate-y-1 transition-all duration-300 cursor-pointer"></i>
+                    <i class="fa-brands fa-cc-paypal hover:text-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer"></i>
+                    <i class="fa-brands fa-cc-amex hover:text-blue-400 hover:-translate-y-1 transition-all duration-300 cursor-pointer"></i>
+                    <div class="h-6 flex items-center px-1.5 border-2 border-gray-400 rounded hover:border-yellow-500 hover:text-yellow-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                        <span class="font-black text-[9px] tracking-tighter leading-none mt-0.5">WU</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Modals Overlay System -->
+    <div id="modal-container" class="fixed inset-0 z-[100] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="absolute inset-0 bg-[#BD3B0A]/70 backdrop-blur-sm" id="modal-backdrop" onclick="closeModals()"></div>
+        
+        <!-- Address Modal with Accordion -->
+        <div id="modal-address" class="hidden relative bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl transform scale-95 transition-all duration-300 mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Delivery Information</h2>
+                <button onclick="closeModals()" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition shrink-0 ml-4"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="w-full mx-auto border-b border-gray-200 mb-6 pb-2">
+                <!-- Section 1 -->
+                <div class="accordion-item border-t border-gray-200">
+                    <button class="accordion-trigger flex flex-1 items-center justify-between w-full py-4 font-medium transition-all hover:text-[#d94a11] group" onclick="toggleAccordion(this)">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-regular fa-user text-gray-400 group-hover:text-[#d94a11] w-5 text-left"></i>
+                            <span>Personal Information</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down shrink-0 transition-transform duration-200 text-gray-400"></i>
+                    </button>
+                    <div class="accordion-content overflow-hidden text-sm transition-all max-h-0 duration-300 ease-in-out">
+                        <div class="pb-6 pt-2 flex flex-col gap-6">
+                            <div class="relative w-full">
+                                <input type="text" id="input-fname" placeholder="First Name" class="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11]">
+                                <p class="error-msg absolute -bottom-5 left-1 text-[10px] text-red-500 hidden font-medium">This field is required</p>
+                            </div>
+                            <div class="relative w-full">
+                                <input type="text" id="input-lname" placeholder="Last Name" class="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11]">
+                                <p class="error-msg absolute -bottom-5 left-1 text-[10px] text-red-500 hidden font-medium">This field is required</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="accordion-item border-t border-gray-200">
+                    <button class="accordion-trigger flex flex-1 items-center justify-between w-full py-4 font-medium transition-all hover:text-[#d94a11] group" onclick="toggleAccordion(this)">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-regular fa-envelope text-gray-400 group-hover:text-[#d94a11] w-5 text-left"></i>
+                            <span>Contact Information</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down shrink-0 transition-transform duration-200 text-gray-400"></i>
+                    </button>
+                    <div class="accordion-content overflow-hidden text-sm transition-all max-h-0 duration-300 ease-in-out">
+                        <div class="pb-6 pt-2 flex flex-col gap-6">
+                            <div class="relative w-full">
+                                <input type="email" id="input-email" placeholder="Email" class="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11]">
+                                <p class="error-msg absolute -bottom-5 left-1 text-[10px] text-red-500 hidden font-medium">Invalid email address</p>
+                            </div>
+                            <div class="relative w-full">
+                                <input type="tel" id="input-phone" placeholder="Phone" class="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11]">
+                                <p class="error-msg absolute -bottom-5 left-1 text-[10px] text-red-500 hidden font-medium">This field is required</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="accordion-item border-t border-gray-200">
+                    <button class="accordion-trigger flex flex-1 items-center justify-between w-full py-4 font-medium transition-all hover:text-[#d94a11] group" onclick="toggleAccordion(this)">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-gray-400 group-hover:text-[#d94a11] w-5 text-left"></i>
+                            <span>Address Information</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down shrink-0 transition-transform duration-200 text-gray-400"></i>
+                    </button>
+                    <div class="accordion-content overflow-hidden text-sm transition-all max-h-0 duration-300 ease-in-out">
+                        <div class="pb-6 pt-2 flex flex-col gap-6">
+                            <div class="relative w-full">
+                                <input type="text" id="input-street" placeholder="Street Address" class="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11]">
+                                <p class="error-msg absolute -bottom-5 left-1 text-[10px] text-red-500 hidden font-medium">Street is required</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="relative w-full">
+                                    <input type="text" id="input-city" placeholder="City" class="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11]">
+                                    <p class="error-msg absolute -bottom-5 left-1 text-[10px] text-red-500 hidden font-medium">City is required</p>
+                                </div>
+                                <div class="relative w-full">
+                                    <input type="text" id="input-state" placeholder="State/Province" class="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11]">
+                                    <p class="error-msg absolute -bottom-5 left-1 text-[10px] text-red-500 hidden font-medium">State is required</p>
+                                </div>
+                            </div>
+                            <div class="relative w-full mt-1">
+                                <input type="text" id="input-zip" placeholder="Zip/Postal Code" class="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition-all placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11]">
+                                <p class="error-msg absolute -bottom-5 left-1 text-[10px] text-red-500 hidden font-medium">Valid zip is required</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="saveAddress()" class="w-full bg-[#ffb05c] hover:bg-[#ffd699] text-[#BD3B0A] font-bold py-3 sm:py-3.5 rounded-full transition shadow-md text-sm sm:text-base">
+                Save & Continue
+            </button>
+        </div>
+
+        <div id="modal-logging" class="hidden relative bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 max-w-md w-full text-center shadow-2xl transform scale-95 transition-all duration-300 mx-4">
+            <div class="w-16 h-16 sm:w-20 sm:h-20 border-4 border-gray-100 border-t-red-500 rounded-full animate-spin mx-auto mb-4 sm:mb-6 relative"></div>
+            <i class="fa-solid fa-lock absolute top-12 sm:top-14 left-1/2 transform -translate-x-1/2 text-gray-400 text-lg sm:text-xl"></i>
+            
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 mt-2 sm:mt-4">Securely logging you in..</h2>
+            <p class="text-gray-500 text-xs sm:text-sm leading-relaxed px-2 sm:px-4">You activate Klarna one touch, so no need to enter your password</p>
+        </div>
+
+        <div id="modal-klarna" class="hidden relative bg-[#f8f5f0] rounded-2xl sm:rounded-[2rem] max-w-lg w-full shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 max-h-[90vh] overflow-y-auto">
+            <div class="p-5 sm:p-8">
+                <div class="flex justify-between items-center mb-6 sm:mb-8">
+                    <div class="bg-[#ffb3c7] text-black font-bold px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm">Klarna.</div>
+                    <div class="text-xl sm:text-2xl font-bold text-gray-900">₹ 707.40</div>
+                </div>
+
+                <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-3 sm:mb-4 border border-gray-100 flex justify-between items-center cursor-pointer hover:border-gray-300 transition shadow-sm">
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 shrink-0"><i class="fa-solid fa-location-dot text-sm sm:text-base"></i></div>
+                        <div>
+                            <p class="text-[10px] sm:text-xs text-gray-500 mb-0.5">Delivery address</p>
+                            <p class="text-xs sm:text-sm font-bold text-gray-800 line-clamp-1">Mumbai, Andheri West, India</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-gray-400 text-xs sm:text-sm shrink-0 ml-2"></i>
+                </div>
+
+                <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-3 sm:mb-4 border border-gray-100 flex flex-col cursor-pointer hover:border-gray-300 transition shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 shrink-0"><i class="fa-solid fa-list-ul text-sm sm:text-base"></i></div>
+                            <div>
+                                <p class="text-xs sm:text-sm font-bold text-gray-800 mb-0.5">Split in 4 Instalments</p>
+                                <p class="text-[10px] sm:text-xs text-gray-500">₹ 176.85 INR / Month</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-gray-400 text-xs sm:text-sm shrink-0"></i>
+                    </div>
+                    <div class="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-gray-100 flex justify-between text-center px-1 sm:px-2 overflow-x-auto no-scrollbar pb-2">
+                        <div class="relative min-w-[60px]">
+                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full mx-auto mb-1.5 sm:mb-2 relative z-10 border-2 border-white"></div>
+                            <div class="absolute top-1 sm:top-1.5 left-1/2 w-[80px] sm:w-[150px] h-0.5 bg-gray-200"></div>
+                            <p class="text-[10px] sm:text-sm font-bold text-gray-900">₹176.85</p>
+                            <p class="text-[8px] sm:text-xs text-gray-400 whitespace-nowrap">Due Today</p>
+                        </div>
+                        <div class="relative min-w-[60px]">
+                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full mx-auto mb-1.5 sm:mb-2 relative z-10 border-2 border-white"></div>
+                            <div class="absolute top-1 sm:top-1.5 left-1/2 w-[80px] sm:w-[150px] h-0.5 bg-gray-200"></div>
+                            <p class="text-[10px] sm:text-sm font-bold text-gray-900">₹176.85</p>
+                            <p class="text-[8px] sm:text-xs text-gray-400 whitespace-nowrap">Mar 12</p>
+                        </div>
+                        <div class="relative min-w-[60px]">
+                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full mx-auto mb-1.5 sm:mb-2 relative z-10 border-2 border-white"></div>
+                            <div class="absolute top-1 sm:top-1.5 left-1/2 w-[80px] sm:w-[150px] h-0.5 bg-gray-200"></div>
+                            <p class="text-[10px] sm:text-sm font-bold text-gray-900">₹176.85</p>
+                            <p class="text-[8px] sm:text-xs text-gray-400 whitespace-nowrap">May 10</p>
+                        </div>
+                        <div class="relative min-w-[60px]">
+                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-gray-200 rounded-full mx-auto mb-1.5 sm:mb-2 relative z-10 border-2 border-white"></div>
+                            <p class="text-[10px] sm:text-sm font-bold text-gray-900">₹176.85</p>
+                            <p class="text-[8px] sm:text-xs text-gray-400 whitespace-nowrap">Jun 10</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-6 sm:mb-8 border border-gray-100 flex justify-between items-center shadow-sm">
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <div class="w-10 h-7 sm:w-12 sm:h-8 bg-gray-900 rounded flex items-center justify-center text-white shrink-0"><i class="fa-brands fa-cc-mastercard text-base sm:text-xl"></i></div>
+                        <div>
+                            <p class="text-xs sm:text-sm font-bold text-gray-800 mb-0.5">•••• •••• •••• 2345</p>
+                            <p class="text-[10px] sm:text-xs text-gray-500">Valid until 00/00</p>
+                        </div>
+                    </div>
+                    <button class="text-xs sm:text-sm font-bold text-gray-900 hover:underline shrink-0 ml-2">Change</button>
+                </div>
+
+                <button onclick="finishKlarnaFlow()" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 sm:py-4 rounded-full transition shadow-lg text-sm sm:text-lg">
+                    Confirm to Pay
+                </button>
+            </div>
+        </div>
+
+        <div id="modal-success" class="hidden relative bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-10 max-w-md w-full text-center shadow-2xl transform scale-95 transition-all duration-300 mx-4">
+            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-[#ffb05c] rounded-full flex items-center justify-center mx-auto mb-5 sm:mb-6 text-green-700 text-3xl sm:text-4xl shadow-lg relative">
+                <i class="fa-solid fa-check"></i>
+                <div class="absolute -top-1 -right-2 text-yellow-400 text-lg sm:text-xl animate-bounce"><i class="fa-solid fa-star"></i></div>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">Order Confirmed</h2>
+            <p class="text-gray-500 text-xs sm:text-sm mb-6 sm:mb-8 leading-relaxed px-2">We have receive your order. You'll get a confirmation email to <br><span class="font-bold text-gray-800">hello@musemind.agency</span></p>
+            
+            <button class="w-full bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-800 font-bold py-3 sm:py-3.5 rounded-full mb-3 sm:mb-4 transition shadow-sm text-sm sm:text-base">
+                View order details
+            </button>
+            <button class="w-full bg-[#ffb05c] hover:bg-[#ffd699] text-gray-900 font-bold py-3 sm:py-3.5 rounded-full transition shadow-sm text-sm sm:text-base" onclick="closeModals(); showPage('product')">
+                Continue shopping
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Interactions -->
+    <script>
+        const pageHome = document.getElementById('page-home');
+        const pageProduct = document.getElementById('page-product');
+        const pageCheckout = document.getElementById('page-checkout');
+
+        function showPage(pageName) {
+            pageHome.classList.add('hidden');
+            pageHome.classList.remove('block');
+            pageProduct.classList.add('hidden');
+            pageProduct.classList.remove('block');
+            pageCheckout.classList.add('hidden');
+            pageCheckout.classList.remove('block');
+            
+            if (pageName === 'checkout') {
+                pageCheckout.classList.remove('hidden');
+                pageCheckout.classList.add('block');
+            } else if (pageName === 'product') {
+                pageProduct.classList.remove('hidden');
+                pageProduct.classList.add('block');
+            } else {
+                pageHome.classList.remove('hidden');
+                pageHome.classList.add('block');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        const searchInput = document.getElementById('search-input');
+        const searchDropdown = document.getElementById('search-dropdown');
+        const searchContainer = document.getElementById('search-container');
+
+        searchInput.addEventListener('focus', () => {
+            searchDropdown.classList.remove('opacity-0', 'scale-y-95', 'pointer-events-none');
+            searchDropdown.classList.add('opacity-100', 'scale-y-100', 'pointer-events-auto');
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!searchContainer.contains(event.target)) {
+                searchDropdown.classList.add('opacity-0', 'scale-y-95', 'pointer-events-none');
+                searchDropdown.classList.remove('opacity-100', 'scale-y-100', 'pointer-events-auto');
+            }
+        });
+        
+        const modalContainer = document.getElementById('modal-container');
+        const mLogging = document.getElementById('modal-logging');
+        const mKlarna = document.getElementById('modal-klarna');
+        const mSuccess = document.getElementById('modal-success');
+        const mAddress = document.getElementById('modal-address');
+
+        function showModalContainer() {
+            modalContainer.classList.remove('opacity-0', 'pointer-events-none');
+            modalContainer.classList.add('opacity-100', 'pointer-events-auto');
+        }
+
+        function closeModals() {
+            modalContainer.classList.add('opacity-0', 'pointer-events-none');
+            modalContainer.classList.remove('opacity-100', 'pointer-events-auto');
+            setTimeout(() => {
+                mLogging.classList.add('hidden');
+                mKlarna.classList.add('hidden');
+                mSuccess.classList.add('hidden');
+                mAddress.classList.add('hidden');
+                [mLogging, mKlarna, mSuccess, mAddress].forEach(m => {
+                    m.classList.replace('scale-100', 'scale-95');
+                });
+            }, 300);
+        }
+        function toggleAccordion(trigger) {
+            const item = trigger.parentElement;
+            const content = item.querySelector('.accordion-content');
+            const icon = trigger.querySelector('.fa-chevron-down');
+            
+            // Single accordion behavior (close others)
+            const allContents = document.querySelectorAll('#modal-address .accordion-content');
+            const allIcons = document.querySelectorAll('#modal-address .fa-chevron-down');
+            
+            let wasOpen = content.style.maxHeight;
+
+            allContents.forEach(c => {
+                c.style.maxHeight = null;
+            });
+            allIcons.forEach(i => {
+                i.style.transform = 'rotate(0deg)';
+            });
+
+            if (!wasOpen) {
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+        
+        function showAddressModal() {
+            // Parse existing address to try and fill the fields
+            const currentAddress = document.getElementById('checkout-delivery-address').textContent;
+            
+            if(currentAddress && !currentAddress.includes("No address provided")) {
+                const parts = currentAddress.split(',').map(p => p.trim());
+                if(parts.length >= 3) {
+                    document.getElementById('input-street').value = parts.slice(0, -2).join(', ');
+                    document.getElementById('input-city').value = parts[parts.length - 2];
+                    document.getElementById('input-state').value = parts[parts.length - 1];
+                } else {
+                    document.getElementById('input-street').value = currentAddress;
+                }
+            } else {
+                // Keep fields empty if there is no address provided
+                document.getElementById('input-street').value = '';
+                document.getElementById('input-city').value = '';
+                document.getElementById('input-state').value = '';
+            }
+            
+            // Clear any existing errors and add input listeners to clear on type
+            const inputs = document.querySelectorAll('#modal-address input');
+            inputs.forEach(input => {
+                input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                const errMsg = input.nextElementSibling;
+                if(errMsg) errMsg.classList.add('hidden');
+                
+                input.addEventListener('input', function() {
+                    this.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                    if(this.nextElementSibling) this.nextElementSibling.classList.add('hidden');
+                });
+            });
+
+            showModalContainer();
+            mAddress.classList.remove('hidden');
+            setTimeout(() => mAddress.classList.replace('scale-95', 'scale-100'), 50);
+            
+            // Automatically open the first accordion tab
+            setTimeout(() => {
+                const firstTrigger = document.querySelector('#modal-address .accordion-trigger');
+                if(firstTrigger && !firstTrigger.parentElement.querySelector('.accordion-content').style.maxHeight) {
+                    toggleAccordion(firstTrigger);
+                }
+            }, 300);
+        }
+        
+        function saveAddress() {
+            // Validate all fields
+            const inputsToValidate = [
+                { id: 'input-fname', el: document.getElementById('input-fname') },
+                { id: 'input-lname', el: document.getElementById('input-lname') },
+                { id: 'input-email', el: document.getElementById('input-email'), isEmail: true },
+                { id: 'input-phone', el: document.getElementById('input-phone') },
+                { id: 'input-street', el: document.getElementById('input-street') },
+                { id: 'input-city', el: document.getElementById('input-city') },
+                { id: 'input-state', el: document.getElementById('input-state') },
+                { id: 'input-zip', el: document.getElementById('input-zip') }
+            ];
+
+            let hasErrors = false;
+            let firstErrorAccordion = null;
+
+            inputsToValidate.forEach(item => {
+                const val = item.el.value.trim();
+                let invalid = false;
+                
+                if (!val) {
+                    invalid = true;
+                } else if (item.isEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                    invalid = true;
+                }
+
+                if (invalid) {
+                    hasErrors = true;
+                    item.el.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                    if (item.el.nextElementSibling) item.el.nextElementSibling.classList.remove('hidden');
+                    
+                    // Track which accordion section needs to be opened to show the error
+                    if (!firstErrorAccordion) {
+                        firstErrorAccordion = item.el.closest('.accordion-item');
+                    }
+                }
+            });
+
+            if (hasErrors) {
+                // If the section with the first error isn't open, open it
+                if (firstErrorAccordion) {
+                    const content = firstErrorAccordion.querySelector('.accordion-content');
+                    if (!content.style.maxHeight) {
+                        toggleAccordion(firstErrorAccordion.querySelector('.accordion-trigger'));
+                    }
+                }
+                return; // Stop saving
+            }
+
+            const street = document.getElementById('input-street').value.trim();
+            const city = document.getElementById('input-city').value.trim();
+            const state = document.getElementById('input-state').value.trim();
+            const zip = document.getElementById('input-zip').value.trim();
+            
+            let newAddressParts = [];
+            if(street) newAddressParts.push(street);
+            if(city) newAddressParts.push(city);
+            if(state) newAddressParts.push(state);
+            if(zip) newAddressParts.push(zip);
+            
+            if(newAddressParts.length > 0) {
+                const addressSpan = document.getElementById('checkout-delivery-address');
+                addressSpan.textContent = newAddressParts.join(', ');
+                addressSpan.classList.remove('italic', 'text-gray-400');
+                
+                // Add a visual flash to show it saved
+                const addressContainer = addressSpan.parentElement;
+                addressContainer.classList.add('text-green-600', 'scale-105');
+                addressContainer.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    addressContainer.classList.remove('text-green-600', 'scale-105');
+                }, 500);
+            }
+            closeModals();
+        }
+
+        function startKlarnaFlow() {
+            showModalContainer();
+            mLogging.classList.remove('hidden');
+            setTimeout(() => mLogging.classList.replace('scale-95', 'scale-100'), 50);
+
+            setTimeout(() => {
+                mLogging.classList.replace('scale-100', 'scale-95');
+                setTimeout(() => {
+                    mLogging.classList.add('hidden');
+                    mKlarna.classList.remove('hidden');
+                    setTimeout(() => mKlarna.classList.replace('scale-95', 'scale-100'), 50);
+                }, 300);
+            }, 2000);
+        }
+
+        function finishKlarnaFlow() {
+            mKlarna.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => {
+                mKlarna.classList.add('hidden');
+                mSuccess.classList.remove('hidden');
+                setTimeout(() => mSuccess.classList.replace('scale-95', 'scale-100'), 50);
+            }, 300);
+        }
+
+        // Global cart array to hold objects: { title, desc, price, img, qty }
+        const cart = [];
+        let currentPaymentMethod = 'online';
+        
+        function updateCartUI() {
+            let count = 0;
+            let subtotal = 0;
+            
+            cart.forEach(item => {
+                count += item.qty;
+                subtotal += item.price * item.qty;
+            });
+            
+            // 1. Update Navbar
+            const navCartCount = document.getElementById('nav-cart-count');
+            const navCartTotal = document.getElementById('nav-cart-total');
+            
+            if (navCartCount && navCartTotal) {
+                navCartCount.textContent = count;
+                navCartCount.className = count > 0 
+                    ? "absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold min-w-[1.125rem] h-4.5 px-1 flex items-center justify-center rounded-full shadow-sm ring-2 ring-white" 
+                    : "absolute -top-1 -right-1 bg-gray-400 text-white text-[10px] font-bold min-w-[1.125rem] h-4.5 px-1 flex items-center justify-center rounded-full shadow-sm ring-2 ring-white";
+                navCartTotal.textContent = `₹${subtotal.toFixed(2)}`;
+            }
+            
+            // 2. Update Checkout Cart Items List
+            const checkoutList = document.getElementById('checkout-items-list');
+            if (checkoutList) {
+                if (cart.length === 0) {
+                    checkoutList.innerHTML = `<div class="text-center py-6 text-gray-500 text-sm">Your cart is currently empty.</div>`;
+                } else {
+                    checkoutList.innerHTML = cart.map((item, index) => `
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-3 sm:p-4 border border-green-100 bg-green-50/30 rounded-xl mb-3">
+                            <div class="flex items-center gap-3 sm:gap-4 flex-1">
+                                <img src="${item.img}" alt="${item.title}" class="w-12 h-12 sm:w-16 sm:h-16 object-cover bg-white rounded-lg p-1 shrink-0 shadow-sm border border-gray-100">
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-xs sm:text-sm line-clamp-2">${item.title}</h4>
+                                    <p class="text-gray-500 text-[10px] sm:text-xs mt-0.5 sm:mt-1">${item.desc}</p>
+                                    <p class="text-base sm:text-lg font-bold text-gray-900 mt-0.5 sm:mt-1">₹${item.price.toFixed(2)}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 sm:gap-4 bg-white border border-gray-200 rounded-full px-2 py-1 shadow-sm w-full sm:w-auto justify-center sm:justify-start">
+                                <button onclick="changeQty(${index}, -1)" class="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-gray-100 rounded-full text-gray-500 transition-colors"><i class="fa-solid fa-minus text-[10px] sm:text-xs"></i></button>
+                                <span class="font-bold text-gray-800 text-xs sm:text-sm w-4 text-center">${item.qty}</span>
+                                <button onclick="changeQty(${index}, 1)" class="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-[#ffb05c] text-[#d94a11] hover:bg-[#d94a11] hover:text-white rounded-full shadow-sm transition-colors"><i class="fa-solid fa-plus text-[10px] sm:text-xs"></i></button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+            
+            // 3. Update Checkout Summary
+            const subElement = document.getElementById('checkout-subtotal');
+            const totalElement = document.getElementById('order_total');
+            const deliveryFeeElement = document.getElementById('delivery_fee_value');
+            const dynamicRow = document.getElementById('dynamic_fee_row');
+            const dynamicValue = document.getElementById('dynamic_fee_value');
+            
+            if (subElement && totalElement) {
+                let delivery = 0;
+                let taxes = subtotal * 0.05; // 5% tax
+                let dynamicFee = 0;
+                
+                if(subtotal > 0) {
+                    if (currentPaymentMethod === 'online') {
+                        delivery = 0;
+                        dynamicFee = -25.00;
+                    } else {
+                        delivery = 67.50;
+                        dynamicFee = 15.00;
+                    }
+                } else {
+                    dynamicValue.textContent = '-₹ 0.00';
+                }
+                
+                const total = subtotal + delivery + taxes + dynamicFee;
+                
+                subElement.textContent = `₹ ${subtotal.toFixed(2)}`;
+                totalElement.textContent = `₹ ${total > 0 ? total.toFixed(2) : '0.00'}`;
+                
+                totalElement.classList.add('scale-110', 'text-[#d94a11]');
+                setTimeout(() => {
+                    totalElement.classList.remove('scale-110', 'text-[#d94a11]');
+                }, 300);
+            }
+        }
+        
+        function changeQty(index, change) {
+            if (cart[index]) {
+                cart[index].qty += change;
+                if (cart[index].qty <= 0) {
+                    cart.splice(index, 1);
+                }
+                updateCartUI();
+            }
+        }
+        
+        function updatePricing(method) {
+            currentPaymentMethod = method;
+            const dynamicRow = document.getElementById('dynamic_fee_row');
+            const dynamicLabel = document.getElementById('dynamic_fee_label');
+            const dynamicValue = document.getElementById('dynamic_fee_value');
+            const deliveryFeeElement = document.getElementById('delivery_fee_value');
+            
+            if (method === 'online') {
+                dynamicRow.classList.remove('text-red-500');
+                dynamicRow.classList.add('text-green-600');
+                dynamicLabel.textContent = 'Online Discount';
+                if(cart.length > 0) dynamicValue.textContent = '-₹ 25.00';
+                
+                deliveryFeeElement.textContent = 'Free';
+                deliveryFeeElement.classList.add('text-green-600');
+                deliveryFeeElement.classList.remove('text-gray-900');
+            } else if (method === 'cod' || method === 'pos') {
+                dynamicRow.classList.remove('text-green-600');
+                dynamicRow.classList.add('text-red-500');
+                dynamicLabel.textContent = 'Handling Fee';
+                if(cart.length > 0) dynamicValue.textContent = '+₹ 15.00';
+                
+                deliveryFeeElement.textContent = '₹ 67.50';
+                deliveryFeeElement.classList.remove('text-green-600');
+                deliveryFeeElement.classList.add('text-gray-900');
+            }
+            
+            updateCartUI();
+        }
+
+        // Carousel Logic
+        let currentSlide = 0;
+        const totalSlides = 3;
+        let slideInterval;
+
+        function goToSlide(index) {
+            currentSlide = index;
+            const slides = document.getElementById('hero-slides');
+            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Update dots
+            const dots = document.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, i) => {
+                if (i === currentSlide) {
+                    dot.classList.add('w-6', 'sm:w-8', 'bg-[#ffb05c]');
+                    dot.classList.remove('w-2.5', 'sm:w-3', 'bg-white/40');
+                } else {
+                    dot.classList.remove('w-6', 'sm:w-8', 'bg-[#ffb05c]');
+                    dot.classList.add('w-2.5', 'sm:w-3', 'bg-white/40');
+                }
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            goToSlide(currentSlide);
+        }
+
+        function startCarousel() {
+            clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        // Authentication State Logic
+        function openAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            const content = document.getElementById('auth-modal-content');
+            if(!modal) return;
+            modal.classList.remove('hidden');
+            // Small delay to allow display block to apply before transition
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            const content = document.getElementById('auth-modal-content');
+            if(!modal) return;
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); // match duration-300
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            
+            // Close modal
+            closeAuthModal();
+            
+            // Switch to logged in state
+            const loginBtn = document.getElementById('auth-login-btn');
+            const userDropdown = document.getElementById('auth-user-dropdown');
+            
+            if(loginBtn && userDropdown) {
+                loginBtn.classList.remove('sm:flex');
+                loginBtn.classList.add('hidden');
+                
+                userDropdown.classList.remove('hidden');
+                userDropdown.classList.add('sm:flex');
+            }
+        }
+
+        function logoutUser(e) {
+            if(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            const loginBtn = document.getElementById('auth-login-btn');
+            const userDropdown = document.getElementById('auth-user-dropdown');
+            
+            if(loginBtn && userDropdown) {
+                loginBtn.classList.remove('hidden');
+                loginBtn.classList.add('sm:flex');
+                
+                userDropdown.classList.remove('sm:flex');
+                userDropdown.classList.add('hidden');
+            }
+        }
+
+        // Initialize Products Add to Cart Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            startCarousel();
+            // Pause on hover
+            const carousel = document.getElementById('hero-carousel');
+            if(carousel) {
+                carousel.addEventListener('mouseenter', () => clearInterval(slideInterval));
+                carousel.addEventListener('mouseleave', startCarousel);
+            }
+
+            const navCartCount = document.getElementById('nav-cart-count');
+            if (navCartCount) {
+                navCartCount.parentElement.classList.add('transition-transform', 'duration-300');
+            }
+            
+            const plusIcons = document.querySelectorAll('.fa-plus');
+            plusIcons.forEach(icon => {
+                const btn = icon.closest('button');
+                // Only bind to buttons that are part of the product cards (they have Add text or plus icon inside product grids)
+                if (btn && !btn.hasAttribute('onclick')) {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const card = btn.closest('.bg-white.rounded-2xl') || btn.closest('.group');
+                        if (card) {
+                            const title = card.querySelector('h3') ? card.querySelector('h3').textContent : 'Product';
+                            const desc = card.querySelector('p') ? card.querySelector('p').textContent : '1 item';
+                            const img = card.querySelector('img') ? card.querySelector('img').src : '';
+                            
+                            const priceElement = card.querySelector('.text-gray-900');
+                            if (priceElement) {
+                                const priceText = priceElement.textContent.replace('₹', '').replace(',', '').trim();
+                                const price = parseFloat(priceText);
+                                
+                                if (!isNaN(price)) {
+                                    // Check if item exists in cart
+                                    const existingItem = cart.find(item => item.title === title);
+                                    if(existingItem) {
+                                        existingItem.qty++;
+                                    } else {
+                                        cart.push({ title, desc, img, price, qty: 1 });
+                                    }
+                                    
+                                    updateCartUI();
+                                    
+                                    // Visual feedback
+                                    const originalHTML = btn.innerHTML;
+                                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Added';
+                                    btn.classList.remove('bg-white', 'text-gray-900', 'hover:bg-gray-900', 'border-gray-200');
+                                    btn.classList.add('bg-gray-900', 'text-white', 'scale-105', 'border-gray-900');
+                                    
+                                    if(navCartCount) navCartCount.parentElement.classList.add('scale-110');
+                                    
+                                    setTimeout(() => {
+                                        btn.innerHTML = originalHTML;
+                                        btn.classList.remove('bg-gray-900', 'text-white', 'scale-105', 'border-gray-900');
+                                        btn.classList.add('bg-white', 'text-gray-900', 'hover:bg-gray-900', 'border-gray-200');
+                                        if(navCartCount) navCartCount.parentElement.classList.remove('scale-110');
+                                    }, 800);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+            
+            // Initial render
+            updateCartUI();
+        });
+    </script>
+
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" onclick="closeAuthModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="auth-modal-content">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="p-8 sm:p-10 relative">
+                <!-- Decoration -->
+                <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#ffb05c]/20 rounded-full blur-3xl"></div>
+                <div class="absolute bottom-0 left-0 w-32 h-32 bg-green-200/20 rounded-full blur-3xl"></div>
+                
+                <div class="relative z-10">
+                    <div class="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center mb-6 shadow-md">
+                        <i class="fa-solid fa-leaf text-white text-xl"></i>
+                    </div>
+                    
+                    <h2 class="text-2xl font-black text-gray-900 mb-2">Welcome back</h2>
+                    <p class="text-gray-500 text-sm font-medium mb-8">Please enter your details to sign in.</p>
+                    
+                    <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Email</label>
+                            <input type="email" value="ayman@example.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11] transition-all font-medium" required>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Password</label>
+                                <a href="#" class="text-xs font-bold text-[#d94a11] hover:underline">Forgot password?</a>
+                            </div>
+                            <input type="password" value="password123" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#d94a11]/20 focus:border-[#d94a11] transition-all font-medium" required>
+                        </div>
+                        
+                        <div class="pt-2">
+                            <button type="submit" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3.5 rounded-xl shadow-md transition-all hover:-translate-y-0.5">
+                                Sign In
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <p class="text-center text-sm font-medium text-gray-500 mt-6">
+                        Don't have an account? <a href="#" class="text-[#d94a11] font-bold hover:underline">Sign up</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agentation Web Component -->
+
+    <script src="https://unpkg.com/agentation-wc"></script>
+    <agentation-tool></agentation-tool>
+</body>
+</html>
